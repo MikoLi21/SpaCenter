@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCenter", "SpaCenter\SpaCenter.csproj", "{4AFFFEF7-C071-4832-9425-46287619795F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCenterTest", "SpaCenterTest\SpaCenterTest.csproj", "{841C4B27-FCEC-4279-9222-5472850859D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AFFFEF7-C071-4832-9425-46287619795F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AFFFEF7-C071-4832-9425-46287619795F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AFFFEF7-C071-4832-9425-46287619795F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AFFFEF7-C071-4832-9425-46287619795F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{841C4B27-FCEC-4279-9222-5472850859D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841C4B27-FCEC-4279-9222-5472850859D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841C4B27-FCEC-4279-9222-5472850859D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841C4B27-FCEC-4279-9222-5472850859D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
