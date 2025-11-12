@@ -1,4 +1,6 @@
-﻿namespace SpaCenterTest;
+﻿using NUnit.Framework;
+
+namespace SpaCenterTest;
 
 public class Tests
 {

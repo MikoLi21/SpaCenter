@@ -1,44 +1,50 @@
+using System;
+using System.Collections.Generic;
+
 namespace SpaCenter;
 
 public abstract class Employee : Person
 {
+    public static List<Employee> AllEmployees { get; } = new List<Employee>();
     public string Pesel { get; set; }
     public DateTime HireDate { get; set; }
     public DateTime? LeaveDate { get; set; }
 
-    // Computed Properties
-    public int YearsOfExperience => CalculateYearsOfExperience();
+    public int YearsOfExperience { get; set; }
     public int YearsOfService => CalculateYearsOfService();
-    public double AverageServiceMinutes { get; set; }
+    public double AverageServiceMinutes => CalculateAverageServiceMinutes();
 
     protected Employee(string name, string surname, string email, string phoneNumber, string pesel, DateTime hireDate)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
         HireDate = hireDate;
+        
+        AllEmployees.Add(this);
     }
 
-    private int CalculateYearsOfExperience()
+    public void Promote()
     {
-        var endDate = LeaveDate ?? DateTime.Now;
-        int years = endDate.Year - HireDate.Year;
-        if (endDate < HireDate.AddYears(years)) years--;
-        return years;
+        return;
     }
-
+    public static void CheckYearsOfService()
+    {
+        foreach (var emp in AllEmployees)
+        {
+            if (emp.YearsOfService > 0 && emp.YearsOfService % 2 == 0)
+            {
+                emp.Promote();
+            }
+        }
+    }
+    
     private int CalculateYearsOfService()
     {
-        // Assuming service years = same as experience years
-        return CalculateYearsOfExperience();
+        return DateTime.Now.Year - HireDate.Year;
     }
-
-    public virtual void Promote()
+    
+    public double CalculateAverageServiceMinutes()
     {
-        Console.WriteLine($"{Name} {Surname} has been promoted!");
-    }
-
-    public virtual void CheckYearsOfService()
-    {
-        Console.WriteLine($"{Name} {Surname} has {YearsOfService} years of service.");
+        return 0;
     }
 }
