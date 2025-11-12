@@ -7,9 +7,9 @@ namespace SpaCenter
         public TimeSpan Time { get; set; }
         public string PaymentMethod { get; set; }
 
-        public string Status { get; private set; } // accepted, completed, canceled
+        public string Status { get; private set; } 
 
-        // Associations
+        
         public Customer Customer { get; set; }
         public Employee Employee { get; set; }
         public Service Service { get; set; }
@@ -51,10 +51,52 @@ namespace SpaCenter
                 $"Booking for {Customer.Name} on {Date.ToShortDateString()} at {Time} — Status: {Status}");
         }
 
-        public void MakeBooking()
+        public void MakeBooking(DateTime selectedDate, string selectedEmployee, TimeSpan selectedTime, string selectedService)
         {
+            Date = selectedDate;
+            Time = selectedTime;
+            Employee = Employee.AllEmployees.FirstOrDefault(e => 
+                e.Name.Equals(selectedEmployee, StringComparison.OrdinalIgnoreCase));
+
+            Service = Service.AllServices.FirstOrDefault(e => 
+                e.Name.Equals(selectedService, StringComparison.OrdinalIgnoreCase));
+
+            if (Employee == null)
+            {
+                Console.WriteLine("Employee not found. Please choose a valid employee.");
+                return;
+            }
+
+            if (Service == null)
+            {
+                Console.WriteLine("Service not found.");
+                return;
+            }
+
+            Console.WriteLine($"You selected {Employee} on {Date.ToShortDateString()}.");
+
+            if (!Customer.IsLoggedIn)
+            {
+                Console.WriteLine("You must log in to continue."); 
+                return;
+            }
+
+            if (Customer.Age < Service.MinimalAge)
+            {
+                Console.WriteLine($"Booking failed: Minimum age for this service is {Service.MinimalAge}.");
+                return;
+            }
+
+            ProcessPayment();
+
             Status = "accepted";
-            Console.WriteLine("Booking created successfully.");
+            Console.WriteLine($"Booking created successfully for {Customer.Name} with {Employee.Name}. Status: {Status}");
+
+        }
+
+        public bool ProcessPayment()
+        {
+            return true;
         }
 
         public void ConfirmBooking()
