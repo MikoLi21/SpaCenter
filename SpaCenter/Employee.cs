@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaCenter;
 
 public abstract class Employee : Person
 {
     public static List<Employee> AllEmployees { get; } = new List<Employee>();
+    public List<Booking> Bookings { get; set; } = new List<Booking>();
     public string Pesel { get; set; }
     public DateTime HireDate { get; set; }
     public DateTime? LeaveDate { get; set; }
@@ -45,6 +47,16 @@ public abstract class Employee : Person
     
     public double CalculateAverageServiceMinutes()
     {
-        return 0;
+        if (Bookings == null || Bookings.Count == 0)
+            return 0;
+
+        // Sum all service durations
+        double totalMinutes = Bookings
+            .Where(b => b.Service != null)
+            .Sum(b => b.Service.Duration);
+
+        int count = Bookings.Count(b => b.Service != null);
+
+        return count == 0 ? 0 : totalMinutes / count;
     }
 }

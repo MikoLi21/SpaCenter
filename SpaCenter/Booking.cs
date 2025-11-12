@@ -14,6 +14,7 @@ public class Booking
         // Associations
         public Customer Customer { get; set; }
         public Employee Employee { get; set; }
+        public Service Service { get; set; }
         public List<Service> Services { get; set; }
 
         public Booking(Customer customer, Employee employee, DateTime date, TimeSpan time, string paymentMethod)
