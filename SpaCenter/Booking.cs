@@ -1,15 +1,18 @@
-namespace SpaCenter;
-
-public class Booking
+namespace SpaCenter
 {
+
+    public class Booking
+    {
         public DateTime Date { get; set; }
         public TimeSpan Time { get; set; }
         public string PaymentMethod { get; set; }
+
         public string Status { get; private set; } // accepted, completed, canceled
 
         // Associations
         public Customer Customer { get; set; }
         public Employee Employee { get; set; }
+        public Service Service { get; set; }
         public List<Service> Services { get; set; }
 
         public Booking(Customer customer, Employee employee, DateTime date, TimeSpan time, string paymentMethod)
@@ -44,7 +47,8 @@ public class Booking
 
         public void CheckBookings()
         {
-            Console.WriteLine($"Booking for {Customer.Name} on {Date.ToShortDateString()} at {Time} — Status: {Status}");
+            Console.WriteLine(
+                $"Booking for {Customer.Name} on {Date.ToShortDateString()} at {Time} — Status: {Status}");
         }
 
         public void MakeBooking()
@@ -71,4 +75,5 @@ public class Booking
                 Console.WriteLine("Invalid status value.");
             }
         }
+    }
 }

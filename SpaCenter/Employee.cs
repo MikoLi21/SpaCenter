@@ -1,44 +1,61 @@
+using System;
+
 namespace SpaCenter;
 
 public abstract class Employee : Person
 {
+    public static List<Employee> AllEmployees { get; } = new List<Employee>();
+    public List<Booking> Bookings { get; set; } = new List<Booking>();
     public string Pesel { get; set; }
     public DateTime HireDate { get; set; }
     public DateTime? LeaveDate { get; set; }
 
-    // Computed Properties
-    public int YearsOfExperience => CalculateYearsOfExperience();
+    public int YearsOfExperience { get; set; }
     public int YearsOfService => CalculateYearsOfService();
-    public double AverageServiceMinutes { get; set; }
+    public double AverageServiceMinutes => CalculateAverageServiceMinute();
 
     protected Employee(string name, string surname, string email, string phoneNumber, string pesel, DateTime hireDate)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
         HireDate = hireDate;
-    }
 
-    private int CalculateYearsOfExperience()
-    {
-        var endDate = LeaveDate ?? DateTime.Now;
-        int years = endDate.Year - HireDate.Year;
-        if (endDate < HireDate.AddYears(years)) years--;
-        return years;
     }
 
     private int CalculateYearsOfService()
     {
-        // Assuming service years = same as experience years
-        return CalculateYearsOfExperience();
+        return DateTime.Now.Year - HireDate.Year;
     }
 
-    public virtual void Promote()
+    private double CalculateAverageServiceMinute()
     {
-        Console.WriteLine($"{Name} {Surname} has been promoted!");
+        if (Bookings == null || Bookings.Count == 0)
+            return 0;
+
+        // Sum all service durations
+        double totalMinutes = Bookings
+            .Where(b => b.Service != null)
+            .Sum(b => b.Service.Duration);
+
+        int count = Bookings.Count(b => b.Service != null);
+
+        return count == 0 ? 0 : totalMinutes / count;
     }
 
-    public virtual void CheckYearsOfService()
+    public  void Promote()
     {
-        Console.WriteLine($"{Name} {Surname} has {YearsOfService} years of service.");
+        return;
+    }
+
+    public static void CheckYearsOfService()
+    {
+
+        foreach (var emp in AllEmployees)
+        {
+            if (emp.YearsOfService > 0 && emp.YearsOfService % 2 == 0)
+            {
+                emp.Promote();
+            }
+        }
     }
 }
