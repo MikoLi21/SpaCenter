@@ -4,6 +4,8 @@ namespace SpaCenter;
 
 public class Customer : Person
 {
+    public static List<Customer> AllCustomers { get; } = new List<Customer>();
+    
     public DateTime DateOfBirth { get; set; }
     public bool IsLoggedIn { get; set; }
 
@@ -23,6 +25,7 @@ public class Customer : Person
     {
         DateOfBirth = dateOfBirth;
         IsLoggedIn = false;
+        AllCustomers.Add(this);
     }
 
     public static Customer Register(string name, string surname, string email, string phoneNumber, DateTime dateOfBirth)

@@ -19,7 +19,7 @@ public abstract class Employee : Person
     {
         Pesel = pesel;
         HireDate = hireDate;
-
+        AllEmployees.Add(this);
     }
 
     private int CalculateYearsOfService()
