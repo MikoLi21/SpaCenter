@@ -34,7 +34,6 @@ public class ServiceTests
     {
         var s1 = new Service("Massage", "Relax full body", 60, 120m, 16);
         var s2 = new Service("Facial", "Skin treatment", 45, 80m, 14);
-        
 
         var result = Service.ViewServices();
 

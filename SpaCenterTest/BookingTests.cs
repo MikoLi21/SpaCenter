@@ -93,7 +93,6 @@ namespace SpaCenterTest
         [Test]
         public void MakeBooking_ServiceNotFound_PrintsMessage_AndReturns()
         {
-            Employee.AllEmployees.Add(_emp);
             var b = new Booking(_cust, _emp, DateTime.Today, new TimeSpan(9,0,0), "cash");
 
             using var sw = new StringWriter();
@@ -111,7 +110,6 @@ namespace SpaCenterTest
         [Test]
         public void MakeBooking_NotLoggedIn_PrintsLoginMessage_AndReturns()
         {
-            Employee.AllEmployees.Add(_emp);
             _cust.IsLoggedIn = false;
 
             var b = new Booking(_cust, null!, DateTime.Today, new TimeSpan(9,0,0), "cash");
@@ -134,7 +132,6 @@ namespace SpaCenterTest
             var teen = new Customer("Teen", "K", "t@b.com", "111", DateTime.Today.AddYears(-12)); // 12 лет
             teen.IsLoggedIn = true;
 
-            Employee.AllEmployees.Add(_emp);
             var b = new Booking(teen, null!, DateTime.Today, new TimeSpan(9,0,0), "cash");
 
             using var sw = new StringWriter();
@@ -150,7 +147,6 @@ namespace SpaCenterTest
         [Test]
         public void MakeBooking_Success_SetsAccepted_AndFields()
         {
-            Employee.AllEmployees.Add(_emp);
             _cust.IsLoggedIn = true;
 
             var b = new Booking(_cust, null!, DateTime.Today, new TimeSpan(9,0,0), "cash");

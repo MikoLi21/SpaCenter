@@ -58,9 +58,7 @@ namespace SpaCenter.Tests
         {
             var e1 = new TestEmployee("E1", "A", "e1@b.com", "1", "11111111111", DateTime.Today.AddYears(-2));
             var e2 = new TestEmployee("E2", "B", "e2@b.com", "2", "22222222222", DateTime.Today.AddYears(-3));
-            Employee.AllEmployees.Add(e1);
-            Employee.AllEmployees.Add(e2);
-
+            
             Assert.DoesNotThrow(() => Employee.CheckYearsOfService());
         }
 
