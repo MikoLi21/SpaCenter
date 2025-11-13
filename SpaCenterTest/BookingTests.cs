@@ -18,9 +18,10 @@ namespace SpaCenterTest
         [SetUp]
         public void SetUp()
         {
-        
+            Customer.AllCustomers.Clear();
             Employee.AllEmployees.Clear();
-            
+            Booking.AllBookings.Clear();
+            Service.AllServices.Clear();
 
             _cust = new Customer("Anna", "Nowak", "a@b.com", "123456789", new DateTime(2000, 1, 1)); // взрослый
             _emp  = new TestEmployee("Eva", "Kowalska", "e@b.com", "987654321", "12345678901", DateTime.Today.AddYears(-3));
@@ -64,7 +65,7 @@ namespace SpaCenterTest
             using var sw = new StringWriter();
             Console.SetOut(sw);
 
-            b.CheckBookings();
+            Booking.CheckBookings();
 
             var output = sw.ToString();
             Assert.That(output, Does.Contain(_cust.Name));

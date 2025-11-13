@@ -8,9 +8,12 @@ namespace SpaCenter.Tests
     public class EmployeeTests
     {
         [SetUp]
-        public void ResetEmployees()
+        public void SetUp()
         {
+            Customer.AllCustomers.Clear();
             Employee.AllEmployees.Clear();
+            Booking.AllBookings.Clear();
+            Service.AllServices.Clear();
         }
 
         [Test]
