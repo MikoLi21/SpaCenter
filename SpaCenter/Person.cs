@@ -5,10 +5,6 @@ namespace SpaCenter;
 [Serializable]
 public abstract class Person
 {
-    //Person Container
-    //private static List<Person> persons_List = new List<Person>();
-   //public static IReadOnlyList<Person> Persons => persons_List.AsReadOnly();
-    
     private static readonly Regex EmailRegex =
         new(@"^[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$");
 
@@ -88,26 +84,5 @@ public abstract class Person
             Surname = surname;
             Email = email;
             PhoneNumber = phoneNumber;
-            
-            //adding persons to the extent class through the constructor 
-            //addPerson(this);
     }
-
-    /*private static void addPerson(Person person)
-    {
-        if (person == null)
-        {
-            throw new ArgumentException("Person cannot be null");
-        }
-        persons_List.Add(person);
-    }*/
-    
-    /*public static void LoadExtent(IEnumerable<Person>? list)
-    {
-        persons_List.Clear();
-
-        if (list == null) return;
-
-        persons_List.AddRange(list);
-    }*/
 }

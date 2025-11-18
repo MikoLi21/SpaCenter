@@ -5,7 +5,7 @@ namespace SpaCenter.Repository;
 
 public static class PersistenceManager
 {
-    public static string FilePath { get; set; } = @"C:\Users\Home\RiderProjects\BYT1\SpaCenter\data.json";
+    public static string FilePath { get; set; } = @"C:\Users\Home\RiderProjects\BYT1\SpaCenter.Repository\data.json";
 
     public static void Save()
     {
@@ -35,27 +35,21 @@ public static class PersistenceManager
     
     public static void Load()
     {
-        try
+        if (!File.Exists(FilePath))
         {
-            if (!File.Exists(FilePath))
-            {
-                throw new FileNotFoundException("File not found");
-            }
+            throw new FileNotFoundException("File not found");
+        }
 
-            var json = File.ReadAllText(FilePath);
-            AllDataWrapper? allData = JsonSerializer.Deserialize<AllDataWrapper>(json);
+        var json = File.ReadAllText(FilePath);
+        AllDataWrapper? allData = JsonSerializer.Deserialize<AllDataWrapper>(json);
 
-            if (allData != null)
-            {
-                Customer.LoadExtent(allData.Customers);
-                Employee.LoadExtent(allData.Employees);
-                Service.LoadExtent(allData.Services);
-                Booking.LoadExtent(allData.Bookings);
-                Branch.LoadExtent(allData.Branches);
-            }
-        } catch (Exception ex)
+        if (allData != null)
         {
-            Console.WriteLine($"Error loading data: {ex.Message}");
+            Customer.LoadExtent(allData.Customers);
+            Employee.LoadExtent(allData.Employees);
+            Service.LoadExtent(allData.Services);
+            Booking.LoadExtent(allData.Bookings);
+            Branch.LoadExtent(allData.Branches);
         }
     }
 

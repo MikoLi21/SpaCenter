@@ -6,7 +6,6 @@ namespace SpaCenterTest;
 
 public class PersistenceTest
 {
-    public static string TestFile { get; private set; } = @"C:\Users\Home\RiderProjects\BYT1\SpaCenter\data.json";
 
     public PersistenceTest()
     {
@@ -15,16 +14,14 @@ public class PersistenceTest
         Service.LoadExtent(new List<Service>());
         Booking.LoadExtent(new List<Booking>());
         Branch.LoadExtent(new List<Branch>());
-        
-        if (File.Exists(TestFile))
-            File.Delete(TestFile);
-        
-        PersistenceManager.FilePath = TestFile;
     }
 
     [Test]
     public void SaveAndLoad_Success()
     {
+        if (File.Exists(PersistenceManager.FilePath))
+            File.Delete(PersistenceManager.FilePath);
+        
         var c1 = new Customer("Anna", "Brown", "annabrown@gmail.com", "+48111222333", new DateTime(1999, 01, 01));
         var e1 = new Employee("Bob", "Smith", "bobsmith666@gmail.com", "+48000555999", 45678901177, DateTime.Today, 3);
         var e2 = new Employee("John", "Black", "john7876@gmail.com", "+48777111777", 78903156789, new DateTime(2024, 05, 06),5.5,  new DateTime(2025, 01, 01));
@@ -60,7 +57,28 @@ public class PersistenceTest
         Assert.That(Branch.Branches[0].Name, Is.EqualTo("SPA Wola"));
         
 
-        Assert.That(File.Exists(TestFile), Is.True);
+        Assert.That(File.Exists(PersistenceManager.FilePath), Is.True);
+    }
+    
+    [Test]
+    public void Load_Success()
+    {
+        PersistenceManager.Load();
+        
+        Assert.That(Customer.Customers, Has.Count.EqualTo(1));
+        Assert.That(Employee.Employees, Has.Count.EqualTo(2));
+        Assert.That(Service.Services, Has.Count.EqualTo(1));
+        Assert.That(Branch.Branches, Has.Count.EqualTo(1));
+        
+        Assert.That(Customer.Customers[0].Name, Is.EqualTo("Anna"));
+        Assert.That(Employee.Employees[0].Name, Is.EqualTo("Bob"));
+        Assert.That(Employee.Employees[1].Name, Is.EqualTo("John"));
+        Assert.That(Service.Services[0].Name, Is.EqualTo("Thai Massage"));
+        Assert.That(Booking.Bookings[0].Customer.Name, Is.EqualTo("Anna"));
+        Assert.That(Branch.Branches[0].Name, Is.EqualTo("SPA Wola"));
+        
+
+        Assert.That(File.Exists(PersistenceManager.FilePath), Is.True);
     }
 
     [Test]
