@@ -20,7 +20,6 @@ public class Service
         Duration = duration;
         Price = price;
         MinimalAge = minimalAge;
-
         AllServices.Add(this);
     }
 

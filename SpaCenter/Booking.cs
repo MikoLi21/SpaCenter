@@ -3,6 +3,7 @@ namespace SpaCenter
 
     public class Booking
     {
+        public static List<Booking> AllBookings { get; } = new List<Booking>();
         public DateTime Date { get; set; }
         public TimeSpan Time { get; set; }
         public string PaymentMethod { get; set; }
@@ -24,6 +25,7 @@ namespace SpaCenter
             PaymentMethod = paymentMethod;
             Status = "accepted";
             Services = new List<Service>();
+            AllBookings.Add(this);
         }
 
         public void UpdateBooking(DateTime newDate, TimeSpan newTime)
@@ -45,10 +47,13 @@ namespace SpaCenter
             Console.WriteLine("Booking canceled. Refund processed if payment was made online.");
         }
 
-        public void CheckBookings()
+        public static void CheckBookings()
         {
-            Console.WriteLine(
-                $"Booking for {Customer.Name} on {Date.ToShortDateString()} at {Time} — Status: {Status}");
+            foreach (var booking in AllBookings)
+            {
+                Console.WriteLine(
+                    $"Booking for {booking.Customer.Name} on {booking.Date.ToShortDateString()} at {booking.Time} — Status: {booking.Status}");
+            }
         }
 
         public void MakeBooking(DateTime selectedDate, string selectedEmployee, TimeSpan selectedTime, string selectedService)
