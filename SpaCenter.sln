@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCenter", "SpaCenter\SpaC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCenterTest", "SpaCenterTest\SpaCenterTest.csproj", "{841C4B27-FCEC-4279-9222-5472850859D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaCenter.Repository", "SpaCenter.Repository\SpaCenter.Repository.csproj", "{375143C7-C6EB-49EF-87E2-5CB4B73FFF11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{841C4B27-FCEC-4279-9222-5472850859D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{841C4B27-FCEC-4279-9222-5472850859D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{841C4B27-FCEC-4279-9222-5472850859D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{375143C7-C6EB-49EF-87E2-5CB4B73FFF11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375143C7-C6EB-49EF-87E2-5CB4B73FFF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375143C7-C6EB-49EF-87E2-5CB4B73FFF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375143C7-C6EB-49EF-87E2-5CB4B73FFF11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
