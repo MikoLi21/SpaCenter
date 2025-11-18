@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SpaCenter.Repository\SpaCenter.Repository.csproj" />
       <ProjectReference Include="..\SpaCenter\SpaCenter.csproj" />
     </ItemGroup>
 

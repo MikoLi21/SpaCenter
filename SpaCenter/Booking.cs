@@ -1,106 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 namespace SpaCenter
 {
-    [Serializable]
+
     public class Booking
     {
-        //Booking Container
-        private static List<Booking> bookings_List = new List<Booking>();
-        public static IReadOnlyList<Booking> Bookings => bookings_List.AsReadOnly();
-        private DateTime _date;
+        public static List<Booking> AllBookings { get; } = new List<Booking>();
+        public DateTime Date { get; set; }
+        public TimeSpan Time { get; set; }
+        public string PaymentMethod { get; set; }
 
-        public DateTime Date
-        {
-            get => _date;
-            set
-            {
-                if (value < DateTime.Today)
-                {
-                    throw new ArgumentException("Booking can't be planned on date earlier than today");
-                }
-                _date = value;
-            }
-        }
-        public PaymentMethod PaymentMethod { get; set; }
-        
-        public BookingStatus Status { get; set; }
+        public string Status { get; private set; } 
+
         
         public Customer Customer { get; set; }
         public Employee Employee { get; set; }
         public Service Service { get; set; }
+        public List<Service> Services { get; set; }
 
-        public Booking(Customer customer, Employee employee, Service service, DateTime date, PaymentMethod paymentMethod)
+        public Booking(Customer customer, Employee employee, DateTime date, TimeSpan time, string paymentMethod)
         {
             Customer = customer;
             Employee = employee;
-            Service = service;
             Date = date;
+            Time = time;
             PaymentMethod = paymentMethod;
-            Status = BookingStatus.Accepted;
-            
-            addBooking(this);
-        }
-        
-        private static void addBooking(Booking booking)
-        {
-            if (booking == null)
-            {
-                throw new ArgumentException("Booking cannot be null");
-            }
-            bookings_List.Add(booking);
-        }
-        
-        public static void LoadExtent(IEnumerable<Booking>? list)
-        {
-            bookings_List.Clear();
-
-            if (list == null) return;
-
-            bookings_List.AddRange(list);
+            Status = "accepted";
+            Services = new List<Service>();
+            AllBookings.Add(this);
         }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        /*public void UpdateBooking(DateTime newDate, TimeSpan newTime)
+        public void UpdateBooking(DateTime newDate, TimeSpan newTime)
         {
             Date = newDate;
             Time = newTime;
@@ -119,10 +47,13 @@ namespace SpaCenter
             Console.WriteLine("Booking canceled. Refund processed if payment was made online.");
         }
 
-        public void CheckBookings()
+        public static void CheckBookings()
         {
-            Console.WriteLine(
-                $"Booking for {Customer.Name} on {Date.ToShortDateString()} at {Time} — Status: {Status}");
+            foreach (var booking in AllBookings)
+            {
+                Console.WriteLine(
+                    $"Booking for {booking.Customer.Name} on {booking.Date.ToShortDateString()} at {booking.Time} — Status: {booking.Status}");
+            }
         }
 
         public void MakeBooking(DateTime selectedDate, string selectedEmployee, TimeSpan selectedTime, string selectedService)
@@ -131,7 +62,7 @@ namespace SpaCenter
             Time = selectedTime;
             Employee = Employee.AllEmployees.FirstOrDefault(e => 
                 e.Name.Equals(selectedEmployee, StringComparison.OrdinalIgnoreCase));
-            
+
             Service = Service.AllServices.FirstOrDefault(e => 
                 e.Name.Equals(selectedService, StringComparison.OrdinalIgnoreCase));
 
@@ -140,7 +71,7 @@ namespace SpaCenter
                 Console.WriteLine("Employee not found. Please choose a valid employee.");
                 return;
             }
-            
+
             if (Service == null)
             {
                 Console.WriteLine("Service not found.");
@@ -148,24 +79,24 @@ namespace SpaCenter
             }
 
             Console.WriteLine($"You selected {Employee} on {Date.ToShortDateString()}.");
-            
+
             if (!Customer.IsLoggedIn)
             {
-               Console.WriteLine("You must log in to continue."); 
-               return;
+                Console.WriteLine("You must log in to continue."); 
+                return;
             }
-            
+
             if (Customer.Age < Service.MinimalAge)
             {
                 Console.WriteLine($"Booking failed: Minimum age for this service is {Service.MinimalAge}.");
                 return;
             }
-            
+
             ProcessPayment();
-            
+
             Status = "accepted";
             Console.WriteLine($"Booking created successfully for {Customer.Name} with {Employee.Name}. Status: {Status}");
-            
+
         }
 
         public bool ProcessPayment()
@@ -175,14 +106,8 @@ namespace SpaCenter
 
         public void ConfirmBooking()
         {
-            if (Status != "accepted")
-            {
-                Console.WriteLine("Booking cannot be confirmed because it has not been accepted yet.");
-                return;
-            }
-
             Status = "completed";
-            Console.WriteLine($"Booking confirmed and completed for {Customer.Name} with {Employee.Name}.");
+            Console.WriteLine("Booking confirmed and completed.");
         }
 
         public void ChangeBookingStatus(string newStatus)
@@ -196,6 +121,6 @@ namespace SpaCenter
             {
                 Console.WriteLine("Invalid status value.");
             }
-        }*/
+        }
     }
 }
