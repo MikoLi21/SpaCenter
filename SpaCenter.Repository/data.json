@@ -1,0 +1,97 @@
+{
+  "Customers": [
+    {
+      "DateOfBirth": "1999-01-01T00:00:00",
+      "Age": 26,
+      "Name": "Anna",
+      "Surname": "Brown",
+      "Email": "annabrown@gmail.com",
+      "PhoneNumber": "\u002B48111222333"
+    }
+  ],
+  "Employees": [
+    {
+      "Pesel": 45678901177,
+      "HireDate": "2025-11-18T00:00:00+01:00",
+      "LeaveDate": null,
+      "YearsOfExperience": 3,
+      "YearsOfService": 0,
+      "AverageServiceMinutes": 0,
+      "Name": "Bob",
+      "Surname": "Smith",
+      "Email": "bobsmith666@gmail.com",
+      "PhoneNumber": "\u002B48000555999"
+    },
+    {
+      "Pesel": 78903156789,
+      "HireDate": "2024-05-06T00:00:00",
+      "LeaveDate": "2025-01-01T00:00:00",
+      "YearsOfExperience": 5.5,
+      "YearsOfService": 1,
+      "AverageServiceMinutes": 0,
+      "Name": "John",
+      "Surname": "Black",
+      "Email": "john7876@gmail.com",
+      "PhoneNumber": "\u002B48777111777"
+    }
+  ],
+  "Services": [
+    {
+      "Name": "Thai Massage",
+      "Description": "Message in thai style",
+      "Duration": "01:00:00",
+      "Price": 300,
+      "MinimalAge": 10
+    }
+  ],
+  "Bookings": [
+    {
+      "Date": "2025-11-25T14:30:00",
+      "PaymentMethod": 1,
+      "Status": 0,
+      "Customer": {
+        "DateOfBirth": "1999-01-01T00:00:00",
+        "Age": 26,
+        "Name": "Anna",
+        "Surname": "Brown",
+        "Email": "annabrown@gmail.com",
+        "PhoneNumber": "\u002B48111222333"
+      },
+      "Employee": {
+        "Pesel": 45678901177,
+        "HireDate": "2025-11-18T00:00:00+01:00",
+        "LeaveDate": null,
+        "YearsOfExperience": 3,
+        "YearsOfService": 0,
+        "AverageServiceMinutes": 0,
+        "Name": "Bob",
+        "Surname": "Smith",
+        "Email": "bobsmith666@gmail.com",
+        "PhoneNumber": "\u002B48000555999"
+      },
+      "Service": {
+        "Name": "Thai Massage",
+        "Description": "Message in thai style",
+        "Duration": "01:00:00",
+        "Price": 300,
+        "MinimalAge": 10
+      }
+    }
+  ],
+  "Branches": [
+    {
+      "Name": "SPA Wola",
+      "Address": {
+        "Street": "ul.Koszykowa",
+        "Building": 80,
+        "City": "Warsaw",
+        "PostalCode": "04-565",
+        "Country": "Poland"
+      },
+      "PhoneNumbers": [
+        "\u002B48565787999",
+        "\u002B48565788888"
+      ]
+    }
+  ]
+}
