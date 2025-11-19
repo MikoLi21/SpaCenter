@@ -1,6 +1,113 @@
 using NUnit.Framework;
 using SpaCenter;
 using System;
+
+namespace SpaCenterTest
+{
+    [TestFixture]
+    public class EmployeeTests
+    {
+        private DateTime _validHireDate;
+
+        [SetUp]
+        public void Setup()
+        {
+            _validHireDate = DateTime.Today.AddYears(-1);
+        }
+
+        
+        [Test]
+        public void InvalidPesel()
+        {
+            var ex = Assert.Throws<ArgumentException>(() =>
+                new Employee(
+                    name: "Anna",
+                    surname: "Smith",
+                    email: "anna@example.com",
+                    phoneNumber: "123456789",
+                    pesel: 1234,               
+                    hireDate: _validHireDate,
+                    yearsOfExperience: 5
+                ));
+
+            Assert.That(ex.Message, Is.EqualTo("Invalid pesel number"));
+        }
+
+        
+        [Test]
+        public void HireDateInFuture()
+        {
+            var futureHire = DateTime.Today.AddDays(1);
+
+            var ex = Assert.Throws<ArgumentException>(() =>
+                new Employee(
+                    name: "Anna",
+                    surname: "Smith",
+                    email: "anna@example.com",
+                    phoneNumber: "123456789",
+                    pesel: 12345678901,
+                    hireDate: futureHire,     
+                    yearsOfExperience: 5
+                ));
+
+            Assert.That(ex.Message, Is.EqualTo("Hire date can't be in the future"));
+        }
+
+        
+        [Test]
+        public void LeaveDateBeforeHireDate()
+        {
+            var employee = new Employee(
+                "Anna", "Smith", "anna@example.com", "123456789",
+                12345678901, _validHireDate, 5
+            );
+
+            var invalidLeave = _validHireDate.AddDays(-1);
+
+            var ex = Assert.Throws<ArgumentException>(() =>
+            {
+                employee.LeaveDate = invalidLeave;
+            });
+
+            Assert.That(ex.Message, Is.EqualTo("Leave date can't be before hire date"));
+        }
+
+       
+        [Test]
+        public void LeaveDateInFuture()
+        {
+            var employee = new Employee(
+                "Anna", "Smith", "anna@example.com", "123456789",
+                12345678901, _validHireDate, 5
+            );
+
+            var futureLeave = DateTime.Today.AddDays(1);
+
+            var ex = Assert.Throws<ArgumentException>(() =>
+            {
+                employee.LeaveDate = futureLeave;
+            });
+
+            Assert.That(ex.Message, Is.EqualTo("Leave date can't be in the future"));
+        }
+
+      
+        [Test]
+        public void YearsOfExperienceOutOfRange()
+        {
+            var ex = Assert.Throws<ArgumentException>(() =>
+                new Employee(
+                    "Anna", "Smith", "anna@example.com", "123456789",
+                    12345678901, _validHireDate,
+                    yearsOfExperience: 50      
+                ));
+
+            Assert.That(ex.Message,
+                Is.EqualTo("Years of experience should be in the range of 0 to 40"));
+        }
+    }
+}
+
 /*
 namespace SpaCenter.Tests
 {
