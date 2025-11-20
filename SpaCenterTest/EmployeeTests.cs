@@ -105,6 +105,37 @@ namespace SpaCenterTest
             Assert.That(ex.Message,
                 Is.EqualTo("Years of experience should be in the range of 0 to 40"));
         }
+        
+        [Test]
+        public void Employees_Extent_Should_Be_ReadOnly()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5);
+
+            var extent = Employee.Employees;
+            
+            Assert.That(extent, Is.AssignableTo<IReadOnlyList<Employee>>());
+            
+            Assert.Throws<NotSupportedException>(() =>
+            {
+                ((IList<Employee>)extent).Add(emp);
+            });
+        }
+        
+        [Test]
+        public void Changing_Property_Should_Update_Employee_In_Extent()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5);
+            
+            emp.YearsOfExperience = 10;
+            
+            var stored = Employee.Employees[0];
+            
+            Assert.That(stored.YearsOfExperience, Is.EqualTo(10));
+        }
     }
 }
 

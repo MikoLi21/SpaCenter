@@ -112,5 +112,38 @@ namespace SpaCenterTest
 
             Assert.That(ex!.Message, Is.EqualTo("At least one phone number is required"));
         }
+        
+        [Test]
+        public void Branches_Extent_Is_ReadOnly()
+        {
+            Branch.LoadExtent(null);
+
+            var address = new Address("Main", 1, "City", "11-111", "Country");
+            var branch = new Branch("Branch A", address, new List<string> { "+48123456789" });
+
+            var extent = Branch.Branches;
+
+            Assert.That(extent, Is.AssignableTo<IReadOnlyList<Branch>>());
+
+            Assert.Throws<NotSupportedException>(() =>
+            {
+                ((IList<Branch>)extent).Add(branch);
+            });
+        }
+        
+        [Test]
+        public void Modifying_Property_Updates_Extent_Object()
+        {
+            Branch.LoadExtent(null);
+
+            var address = new Address("Main", 1, "City", "11-111", "Country");
+            var branch = new Branch("Old Name", address, new List<string> { "+48123456789" });
+            
+            
+            branch.Name = "New Name";
+            
+            var first = Branch.Branches[0];
+            Assert.That(first.Name, Is.EqualTo("New Name"));
+        }
     }
 }
