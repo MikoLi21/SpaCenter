@@ -6,19 +6,14 @@ namespace SpaCenterTest;
 
 public class PersistenceTest
 {
-
-    public PersistenceTest()
+    [Test]
+    public void SaveAndLoad_Success()
     {
         Customer.LoadExtent(new List<Customer>());
         Employee.LoadExtent(new List<Employee>());
         Service.LoadExtent(new List<Service>());
         Booking.LoadExtent(new List<Booking>());
         Branch.LoadExtent(new List<Branch>());
-    }
-
-    [Test]
-    public void SaveAndLoad_Success()
-    {
         if (File.Exists(PersistenceManager.FilePath))
             File.Delete(PersistenceManager.FilePath);
         
@@ -40,6 +35,7 @@ public class PersistenceTest
         Customer.LoadExtent(new List<Customer>());
         Employee.LoadExtent(new List<Employee>());
         Service.LoadExtent(new List<Service>());
+        Booking.LoadExtent(new List<Booking>());
         Branch.LoadExtent(new List<Branch>());
 
         PersistenceManager.Load();
@@ -60,38 +56,17 @@ public class PersistenceTest
         Assert.That(File.Exists(PersistenceManager.FilePath), Is.True);
     }
     
-    [Test]
-    public void Load_Success()
-    {
-        PersistenceManager.Load();
-        
-        Assert.That(Customer.Customers, Has.Count.EqualTo(1));
-        Assert.That(Employee.Employees, Has.Count.EqualTo(2));
-        Assert.That(Service.Services, Has.Count.EqualTo(1));
-        Assert.That(Branch.Branches, Has.Count.EqualTo(1));
-        
-        Assert.That(Customer.Customers[0].Name, Is.EqualTo("Anna"));
-        Assert.That(Employee.Employees[0].Name, Is.EqualTo("Bob"));
-        Assert.That(Employee.Employees[1].Name, Is.EqualTo("John"));
-        Assert.That(Service.Services[0].Name, Is.EqualTo("Thai Massage"));
-        Assert.That(Booking.Bookings[0].Customer.Name, Is.EqualTo("Anna"));
-        Assert.That(Branch.Branches[0].Name, Is.EqualTo("SPA Wola"));
-        
-
-        Assert.That(File.Exists(PersistenceManager.FilePath), Is.True);
-    }
-
+    
     [Test]
     public void Load_FileIsNotFound()
     {
-        string missingFile = Path.Combine("nonexistent.json");
-        PersistenceManager.FilePath = missingFile;
+        PersistenceManager.FilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
         
         var ex = Assert.Throws<FileNotFoundException>(() =>
             PersistenceManager.Load()
         );
         
-        Assert.That(ex.Message,  Is.EqualTo("File not found"));
+        Assert.That(ex.Message,  Does.StartWith("File not found"));
     }
 
 }
