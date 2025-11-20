@@ -15,7 +15,7 @@ public class Employee : Person
     private long _pesel;
     private DateTime _hireDate;
     private DateTime? _leaveDate;
-    private double _yearsOfExperience;
+    private decimal _yearsOfExperience;
 
     public long Pesel
     {
@@ -65,7 +65,7 @@ public class Employee : Person
         }
     }
 
-    public double YearsOfExperience
+    public decimal YearsOfExperience
     {
         get => _yearsOfExperience;
         set
@@ -83,7 +83,7 @@ public class Employee : Person
     private List<Booking> Bookings { get; set; } = new List<Booking>();
     
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        double yearsOfExperience)
+        decimal yearsOfExperience)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
@@ -95,7 +95,7 @@ public class Employee : Person
 
     [JsonConstructor]
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        double yearsOfExperience, DateTime? leaveDate = null)
+        decimal yearsOfExperience, DateTime? leaveDate = null)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
