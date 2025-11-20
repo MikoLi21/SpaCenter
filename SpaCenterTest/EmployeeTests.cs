@@ -8,78 +8,13 @@ namespace SpaCenterTest
     public class EmployeeTests
     {
         private DateTime _validHireDate;
-        private string _name = null!;
-        private string _surname = null!;
-        private string _email = null!;
-        private string _phone = null!;
-        private long _pesel;
-        private DateTime _hireDate;
-        private double _years;
 
         [SetUp]
         public void Setup()
         {
-            _name = "Eva";
-            _surname = "Kowalska";
-            _email = "eva@example.com";
-            _phone = "999888777";
-            _pesel = 12345678901;
-            _hireDate = DateTime.Today.AddYears(-5);
-            _years = 4;
-
-            
             _validHireDate = DateTime.Today.AddYears(-1);
         }
 
-        
-        [Test]
-        public void Constructor_SetsNameCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.Name, Is.EqualTo(_name));
-        }
-
-        [Test]
-        public void Constructor_SetsSurnameCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.Surname, Is.EqualTo(_surname));
-        }
-
-        [Test]
-        public void Constructor_SetsEmailCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.Email, Is.EqualTo(_email));
-        }
-
-        [Test]
-        public void Constructor_SetsPhoneCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.PhoneNumber, Is.EqualTo(_phone));
-        }
-
-        [Test]
-        public void Constructor_SetsPeselCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.Pesel, Is.EqualTo(_pesel));
-        }
-
-        [Test]
-        public void Constructor_SetsHireDateCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.HireDate, Is.EqualTo(_hireDate));
-        }
-
-        [Test]
-        public void Constructor_SetsYearsOfExperienceCorrectly()
-        {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
-            Assert.That(e.YearsOfExperience, Is.EqualTo(_years));
-        }
         
         [Test]
         public void InvalidPesel()
@@ -169,6 +104,37 @@ namespace SpaCenterTest
 
             Assert.That(ex.Message,
                 Is.EqualTo("Years of experience should be in the range of 0 to 40"));
+        }
+        
+        [Test]
+        public void Employees_Extent_Should_Be_ReadOnly()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5);
+
+            var extent = Employee.Employees;
+            
+            Assert.That(extent, Is.AssignableTo<IReadOnlyList<Employee>>());
+            
+            Assert.Throws<NotSupportedException>(() =>
+            {
+                ((IList<Employee>)extent).Add(emp);
+            });
+        }
+        
+        [Test]
+        public void Changing_Property_Should_Update_Employee_In_Extent()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5);
+            
+            emp.YearsOfExperience = 10;
+            
+            var stored = Employee.Employees[0];
+            
+            Assert.That(stored.YearsOfExperience, Is.EqualTo(10));
         }
     }
 }

@@ -94,5 +94,20 @@ namespace SpaCenterTest
 
             Assert.That(ex!.Message, Does.Contain("Country can't be empty"));
         }
+        
+        [Test]
+        public void All_Fields_Should_Be_Private()
+        {
+            var type = typeof(Address);
+
+            var fields = type.GetFields(
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            foreach (var field in fields)
+            {
+                Assert.That(field.IsPrivate, Is.True);
+            }
+        }
     }
 }
