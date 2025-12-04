@@ -114,5 +114,37 @@ namespace SpaCenterTest
             var first = Customer.Customers[0];
             Assert.That(first.DateOfBirth, Is.EqualTo(new DateTime(1985, 5, 5)));
         }
+        
+        [Test]
+        public void BookService_ShouldCreateBookingAndReverseConnections()
+        {
+            var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
+            var customer = new Customer(_name, _surname, _email, _phone, _dob);
+            
+            var employee = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5);
+
+            var booking = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
+            
+            Assert.That(
+                customer.ListOfBookings,
+                Has.One.Matches<Booking>(b =>
+                    b.PaymentMethod == booking.PaymentMethod &&
+                    b.Date == booking.Date &&
+                    b.Service.Name == booking.Service.Name &&
+                    b.Employee.Pesel == booking.Employee.Pesel &&
+                    b.Customer.Name == booking.Customer.Name &&
+                    b.Customer.Surname == booking.Customer.Surname
+                    ));
+            
+
+            Assert.That(service.ListOfBookings,
+                Has.One.Matches<Booking>(b => b == booking));
+
+            Assert.That(booking.Customer, Is.EqualTo(customer));
+            Assert.That(booking.Service, Is.EqualTo(service));
+            Assert.That(booking.Employee, Is.EqualTo(employee));
+        }
     }
 }

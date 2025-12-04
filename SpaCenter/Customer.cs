@@ -22,6 +22,9 @@ public class Customer : Person
             _dateOfBirth = value;
         }
     }   
+    
+    private HashSet<Booking> _listOfBookings = new HashSet<Booking>();
+    public IEnumerable<Booking> ListOfBookings => _listOfBookings.ToHashSet();
     public Customer(string name, string surname, string email, string phoneNumber, DateTime dateOfBirth)
         : base(name, surname, email, phoneNumber)
     {
@@ -46,6 +49,22 @@ public class Customer : Person
         if (list == null) return;
 
         customers_List.AddRange(list);
+    }
+    
+    internal void AddBookingReverse(Booking booking)
+    {
+        _listOfBookings.Add(booking);
+    }
+
+    internal void RemoveBookingReverse(Booking booking)
+    {
+        _listOfBookings.Remove(booking);
+    }
+    
+    // Factory method that serves as the constructor for Booking
+    public Booking BookService(PaymentMethod paymentMethod, DateTime date, Service service, Employee employee)
+    {
+        return new Booking(this, service,employee, date, paymentMethod);
     }
     
     
