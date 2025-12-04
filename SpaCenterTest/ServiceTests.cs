@@ -94,6 +94,92 @@ namespace SpaCenterTest
 
             Assert.That(ex!.Message, Is.EqualTo("Age can't be zero or negative"));
         }
+        
+        
+        //association
+        [Test]
+        public void AddSubService_CreatesAssociation()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+
+            main.AddSubService(sub);
+
+            Assert.That(main.SubServices.Count, Is.EqualTo(1));
+            Assert.That(main.SubServices[0], Is.EqualTo(sub));
+        }
+
+        [Test]
+        public void AddSubService_DoesNotAddDuplicate()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+
+            main.AddSubService(sub);
+            main.AddSubService(sub); 
+
+            Assert.That(main.SubServices.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RemoveSubService_RemovesAssociation()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+
+            main.AddSubService(sub);
+            main.RemoveSubService(sub);
+
+            Assert.That(main.SubServices.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void RemoveSubService_DoesNothing_WhenSubServiceNotPresent()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+
+           
+            main.RemoveSubService(sub);
+
+            Assert.That(main.SubServices.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void AddSubService_ThrowsException_WhenSubServiceIsNull()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+
+            var ex = Assert.Throws<ArgumentNullException>(() =>
+                main.AddSubService(null!)
+            );
+
+            Assert.That(ex!.Message, Does.Contain("Sub-service cannot be null"));
+        }
+
+        [Test]
+        public void AddSubService_ThrowsException_WhenServiceAddsItself()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+
+            var ex = Assert.Throws<ArgumentException>(() =>
+                main.AddSubService(main)
+            );
+
+            Assert.That(ex!.Message, Does.Contain("Service cannot be part of itself"));
+        }
+
+        [Test]
+        public void RemoveSubService_ThrowsException_WhenSubServiceIsNull()
+        {
+            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+
+            var ex = Assert.Throws<ArgumentNullException>(() =>
+                main.RemoveSubService(null!)
+            );
+
+            Assert.That(ex!.Message, Does.Contain("Sub-service cannot be null"));
+        }
     }
 }
 

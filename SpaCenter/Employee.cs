@@ -13,11 +13,46 @@ public class Employee : Person
     private static List<Employee> employees_List = new List<Employee>();
     public static IReadOnlyList<Employee> Employees => employees_List.AsReadOnly();
     
+    private HashSet<Service> _providesServices = new HashSet<Service>();
+    public IEnumerable<Service> ProvidesServices => _providesServices.ToHashSet();
+    
     private long _pesel;
     private DateTime _hireDate;
     private DateTime? _leaveDate;
     private decimal _yearsOfExperience;
 
+    public void AddServiceToEmployee(Service service)
+    {
+        if (service == null)
+            throw new ArgumentNullException(nameof(service));
+
+        if (_providesServices.Contains(service))
+            return;
+
+        _providesServices.Add(service);
+        service.AddEmployeeReverse(this); // reverse connection
+    }
+    public void RemoveServiceFromEmployee(Service service)
+    {
+        if (service == null)
+            throw new ArgumentNullException(nameof(service));
+
+        if (!_providesServices.Contains(service))
+            return;
+
+        _providesServices.Remove(service);
+        service.RevomeEmployeeReverse(this); 
+    }
+    internal void AddServiceToEmployeeReverse(Service service)
+    {
+        _providesServices.Add(service);
+    }
+
+    // PRIVATE reverse method
+    internal void RemoveServiceFromEmployeeReverse(Service service)
+    {
+        _providesServices.Remove(service);
+    }
     public long Pesel
     {
         get => _pesel;
