@@ -146,6 +146,9 @@ public class Service
             _minimalAge = value;
         }
     }
+    
+    private HashSet<Booking> _listOfBookings = new HashSet<Booking>();
+    public IEnumerable<Booking> ListOfBookings => _listOfBookings.ToHashSet();
 
     public Service(string name, string description, TimeSpan duration, decimal price, int minimalAge)
     {
@@ -174,6 +177,16 @@ public class Service
         if (list == null) return;
 
         services_List.AddRange(list);
+    }
+    
+    internal void AddBookingReverse(Booking booking)
+    {
+        _listOfBookings.Add(booking);
+    }
+
+    internal void RemoveBookingReverse(Booking booking)
+    {
+        _listOfBookings.Remove(booking);
     }
     
     

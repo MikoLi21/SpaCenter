@@ -116,7 +116,11 @@ public class Employee : Person
     public int YearsOfService => CalculateYearsOfService();
     public double AverageServiceMinutes => CalculateAverageServiceMinute();
     
-    private List<Booking> Bookings { get; set; } = new List<Booking>();
+    //private List<Booking> Bookings { get; set; } = new List<Booking>();
+    
+    private HashSet<Booking> _assignedTo = new HashSet<Booking>();
+
+    public IEnumerable<Booking> AssignedTo => _assignedTo.ToHashSet();
     
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
         decimal yearsOfExperience)
@@ -158,15 +162,15 @@ public class Employee : Person
 
     private double CalculateAverageServiceMinute()
     {
-        if (Bookings == null || Bookings.Count == 0)
+        if (AssignedTo == null || AssignedTo.Count() == 0)
             return 0;
 
         // Sum all service durations
-        double totalMinutes = Bookings
+        double totalMinutes = AssignedTo
             .Where(b => b.Service != null)
             .Sum(b => b.Service.Duration.TotalMinutes);
 
-        int count = Bookings.Count(b => b.Service != null);
+        int count = AssignedTo.Count(b => b.Service != null);
 
         return count == 0 ? 0 : totalMinutes / count;
     }
@@ -179,6 +183,41 @@ public class Employee : Person
 
         employees_List.AddRange(list);
     }
+    
+    public void AddBookingEmployeeAssignedTo(Booking booking)
+    {
+        if (booking == null)
+            throw new ArgumentNullException(nameof(booking));
+
+        if (_assignedTo.Contains(booking))
+            return; // already connected
+
+        _assignedTo.Add(booking);
+        booking.SetEmployeeReverse(this);  // reverse connection
+    }
+    
+    public void RemoveBookingEmployeeAssignedTo(Booking booking)
+    {
+        if (booking == null)
+            throw new ArgumentNullException(nameof(booking));
+
+        if (!_assignedTo.Contains(booking))
+            return;
+
+        _assignedTo.Remove(booking);
+        booking.RemoveEmployee(); // reverse removal
+    }
+    
+    internal void AddBookingReverse(Booking booking)
+    {
+        _assignedTo.Add(booking);
+    }
+    
+    internal void RemoveBookingReverse(Booking booking)
+    {
+        _assignedTo.Remove(booking);
+    }
+
     
     
     

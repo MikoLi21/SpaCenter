@@ -32,21 +32,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_SetsCustomerCorrectly()
         {
-            var b = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var b = new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
             Assert.That(b.Customer, Is.EqualTo(_cust));
         }
 
         [Test]
         public void Constructor_SetsEmployeeCorrectly()
         {
-            var b = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var b = new Booking(_cust,_svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
             Assert.That(b.Employee, Is.EqualTo(_emp));
         }
 
         [Test]
         public void Constructor_SetsServiceCorrectly()
         {
-            var b = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var b = new Booking(_cust,_svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
             Assert.That(b.Service, Is.EqualTo(_svc));
         }
 
@@ -54,21 +54,21 @@ namespace SpaCenterTest
         public void Constructor_SetsDateCorrectly()
         {
             DateTime d = DateTime.Today.AddDays(3);
-            var b = new Booking(_cust, _emp, _svc, d, PaymentMethod.AtTheSPA);
+            var b = new Booking(_cust, _svc, _emp, d, PaymentMethod.AtTheSPA);
             Assert.That(b.Date, Is.EqualTo(d));
         }
 
         [Test]
         public void Constructor_SetsPaymentMethodCorrectly()
         {
-            var b = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var b = new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
             Assert.That(b.PaymentMethod, Is.EqualTo(PaymentMethod.AtTheSPA));
         }
 
         [Test]
         public void Constructor_SetsStatusToAccepted()
         {
-            var b = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var b = new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
             Assert.That(b.Status, Is.EqualTo(BookingStatus.Accepted));
         }
 
@@ -80,7 +80,7 @@ namespace SpaCenterTest
         public void Constructor_ThrowsException_WhenDateEarlierThanToday()
         {
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(-1), PaymentMethod.AtTheSPA));
+                new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(-1), PaymentMethod.AtTheSPA));
 
             Assert.That(ex!.Message, Is.EqualTo("Booking can't be planned on date earlier than today"));
         }
@@ -90,7 +90,7 @@ namespace SpaCenterTest
         {
             Booking.LoadExtent(null);
 
-            var booking = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var booking = new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
 
             var extent = Booking.Bookings;
 
@@ -106,7 +106,7 @@ namespace SpaCenterTest
         {
             Booking.LoadExtent(null);
 
-            var booking = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var booking = new Booking(_cust,  _svc,_emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
             
             ///modify attribute
             booking.PaymentMethod = PaymentMethod.PaymentGateway;
@@ -126,8 +126,8 @@ namespace SpaCenterTest
         public void Extent_StoresAllCreatedBookings()
         {
             // Arrange
-            var b1 = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
-            var b2 = new Booking(_cust, _emp, _svc, DateTime.Today.AddDays(2), PaymentMethod.AtTheSPA);
+            var b1 = new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(1), PaymentMethod.AtTheSPA);
+            var b2 = new Booking(_cust, _svc, _emp, DateTime.Today.AddDays(2), PaymentMethod.AtTheSPA);
 
             // Assert
             Assert.That(Booking.Bookings.Count, Is.EqualTo(2));
@@ -143,7 +143,7 @@ namespace SpaCenterTest
 
             // Act & Assert – constructor should throw
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Booking(_cust, _emp, _svc, invalidDate, PaymentMethod.AtTheSPA));
+                new Booking(_cust, _svc, _emp, invalidDate, PaymentMethod.AtTheSPA));
 
             Assert.That(ex!.Message, Is.EqualTo("Booking can't be planned on date earlier than today"));
 
