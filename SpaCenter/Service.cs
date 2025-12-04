@@ -7,6 +7,7 @@ public class Service
 {
     //Service Container
     private static List<Service> services_List = new List<Service>();
+    
     public static IReadOnlyList<Service> Services => services_List.AsReadOnly();
     private string _name;
     private string _description;
@@ -14,6 +15,73 @@ public class Service
     private decimal _price;
     private int _minimalAge;
 
+    private Service? _nextService;
+    private Service? _previousService;
+    
+    //reflex association 
+    private readonly List<Service> _subServices = new List<Service>();
+    public IReadOnlyList<Service> SubServices => _subServices.AsReadOnly();
+    //reverse connection
+    private HashSet<Employee> _providedBy = new HashSet<Employee>();
+    public IEnumerable<Employee> ProvidedBy => _providedBy.ToHashSet();
+    
+    public void AddEmployeeServiceProvidedBy(Employee employee)
+    {
+        if (employee == null)
+            throw new ArgumentNullException(nameof(employee));
+
+        if (_providedBy.Contains(employee))
+            return; 
+
+        _providedBy.Add(employee);
+        employee.AddServiceToEmployeeReverse(this);  
+    }
+    public void RevomeEmployeeServiceProvidedBy(Employee employee)
+    {
+        if (employee == null)
+            throw new ArgumentNullException(nameof(employee));
+
+        if (!_providedBy.Contains(employee))
+            return;
+
+        _providedBy.Remove(employee);
+        employee.RemoveServiceFromEmployeeReverse(this);
+    }
+    internal void AddEmployeeReverse(Employee employee)
+    {
+        _providedBy.Add(employee);
+    }
+
+   
+    internal void RevomeEmployeeReverse(Employee employee)
+    {
+        _providedBy.Remove(employee);
+    }
+    
+    public void AddSubService(Service subService)
+    {
+        if (subService == null)
+            throw new ArgumentNullException(nameof(subService), "Sub-service cannot be null");
+
+        if (ReferenceEquals(this, subService))
+            throw new ArgumentException("Service cannot be part of itself");
+
+        if (_subServices.Contains(subService))
+            return; 
+
+        _subServices.Add(subService);
+    }
+
+   
+    public void RemoveSubService(Service subService)
+    {
+        if (subService == null)
+            throw new ArgumentNullException(nameof(subService), "Sub-service cannot be null");
+
+        _subServices.Remove(subService);
+    }
+
+      
     public string Name
     {
         get => _name;
