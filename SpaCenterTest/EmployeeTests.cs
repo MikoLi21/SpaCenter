@@ -213,5 +213,87 @@ namespace SpaCenterTest
             
             Assert.That(stored.YearsOfExperience, Is.EqualTo(10));
         }
+        private Customer CreateCustomer(string name = "Test")
+        {
+            return new Customer(
+                name,
+                "Customer",
+                $"{name.ToLower()}@example.com",
+                "123456789",
+                new DateTime(1990, 1, 1));
+        }
+
+        private Booking CreateBooking(Employee emp, DateTime date)
+        {
+            var cust = CreateCustomer("Anna");
+            var svc = new Service("MassageX", "Test", TimeSpan.FromMinutes(30), 100m, 16);
+            return new Booking(cust, svc, emp, date, PaymentMethod.AtTheSPA);
+        }
+
+        // Aggregation association Tests
+
+        [Test]
+        public void AddBookingEmployeeAssignedTo_Throws_WhenBookingIsNull()
+        {
+            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
+            var ex = Assert.Throws<ArgumentNullException>(() => emp.AddBookingEmployeeAssignedTo(null!));
+            Assert.That(ex!.ParamName, Is.EqualTo("booking"));
+        }
+
+        
+
+        [Test]
+        public void AddBookingEmployeeAssignedTo_AddsBooking_AndSetsReverseConnection()
+        {
+            var emp1 = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
+            
+            var tempEmp = new Employee("Temp", "E", "temp@example.com", "999999999",
+                55555555555, DateTime.Today.AddYears(-2), 2, _services);
+
+            var booking = CreateBooking(tempEmp, DateTime.Today.AddDays(1));
+
+            
+            booking.RemoveEmployee();
+
+            
+            emp1.AddBookingEmployeeAssignedTo(booking);
+
+            Assert.That(emp1.AssignedTo, Does.Contain(booking));
+            Assert.That(booking.Employee, Is.EqualTo(emp1));
+        }
+
+        
+
+        [Test]
+        public void RemoveBookingEmployeeAssignedTo_Throws_WhenBookingIsNull()
+        {
+            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
+            var ex = Assert.Throws<ArgumentNullException>(() => emp.RemoveBookingEmployeeAssignedTo(null!));
+            Assert.That(ex!.ParamName, Is.EqualTo("booking"));
+        }
+
+        
+
+        [Test]
+        public void RemoveBookingEmployeeAssignedTo_RemovesBooking_AndReverseConnection()
+        {
+            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
+            var booking = CreateBooking(emp, DateTime.Today.AddDays(2));
+       
+            Assert.That(emp.AssignedTo, Does.Contain(booking));
+            Assert.That(booking.Employee, Is.EqualTo(emp));
+
+            
+            emp.RemoveBookingEmployeeAssignedTo(booking);
+
+            Assert.That(emp.AssignedTo, Does.Not.Contain(booking));
+            Assert.That(booking.Employee, Is.Null);
+        }
+    
+
     }
 }
