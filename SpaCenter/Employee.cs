@@ -171,7 +171,6 @@ public class Employee : Person
 
         foreach (var service in services)
             AddServiceToEmployee(service);
-        
         addEmployee(this);
     }
 
