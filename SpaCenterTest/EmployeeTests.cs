@@ -16,7 +16,7 @@ namespace SpaCenterTest
         private DateTime _hireDate;
         private decimal _years;
         private List<Service> _services = new List<Service>();
-        
+        private Service _s1;
 
         [SetUp]
         public void Setup()
@@ -31,8 +31,8 @@ namespace SpaCenterTest
 
             
             _validHireDate = DateTime.Today.AddYears(-1);
-            
-            _services.Add(new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16));
+            _s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            _services.Add(_s1);
 
             
         }
@@ -212,6 +212,153 @@ namespace SpaCenterTest
             var stored = Employee.Employees[0];
             
             Assert.That(stored.YearsOfExperience, Is.EqualTo(10));
+        }
+        
+        //Employee provides Service association (basic) tests
+        [Test]
+        public void EmployeeConstructor_ShouldRequireAtLeastOneService()
+        {
+            Assert.Throws<ArgumentException>(() => new Employee("John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, Enumerable.Empty<Service>()));
+        }
+        
+        [Test]
+        public void EmployeeConstructor_ShouldCreateReverseAssociations()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+
+            Assert.That(emp.ProvidesServices, Contains.Item(_s1));
+            Assert.That(_s1.ProvidedBy, Contains.Item(emp));
+        }
+        
+        [Test]
+        public void AddEmployeeServiceProvidedBy_ShouldCreateReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            s2.AddEmployeeServiceProvidedBy(emp);
+
+            Assert.That(s2.ProvidedBy, Contains.Item(emp));
+            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+        }
+        
+        [Test]
+        public void AddServiceToEmployee_ShouldCreateReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            emp.AddServiceToEmployee(s2);
+
+            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+            Assert.That(s2.ProvidedBy, Contains.Item(emp));
+        }
+        
+        [Test]
+        public void AddEmployeeServiceProvidedBy_ShouldAvoidDuplicates()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            s2.AddEmployeeServiceProvidedBy(emp);
+            s2.AddEmployeeServiceProvidedBy(emp);
+
+            Assert.That(s2.ProvidedBy.Count, Is.EqualTo(1));
+            Assert.That(emp.ProvidesServices.Count, Is.EqualTo(2));
+        }
+        
+        [Test]
+        public void RemoveEmployeeServiceProvidedBy_ShouldRemoveReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            s2.AddEmployeeServiceProvidedBy(emp);
+            s2.RevomeEmployeeServiceProvidedBy(emp);
+
+            Assert.That(s2.ProvidedBy, Does.Not.Contain(emp));
+            Assert.That(emp.ProvidesServices, Does.Not.Contain(s2));
+        }
+        
+        [Test]
+        public void RemoveServiceFromEmployee_ShouldRemoveReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+            
+            emp.AddServiceToEmployee(s2);
+            emp.RemoveServiceFromEmployee(s2);
+
+            Assert.That(emp.ProvidesServices, Does.Not.Contain(s2));
+            Assert.That(s2.ProvidedBy, Does.Not.Contain(emp));
+        }
+        
+        [Test]
+        public void RemoveServiceFromEmployee_ShouldThrow_WhenRemovingLastService()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+
+            Assert.Throws<InvalidOperationException>(() => emp.RemoveServiceFromEmployee(_s1));
+        }
+
+        [Test]
+        public void AddEmployeeServiceProvidedBy_ShouldAllowServiceToHaveZeroEmployees()
+        {
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            Assert.That(s2.ProvidedBy.Count, Is.EqualTo(0));
+        }
+        
+        [Test]
+        public void ReverseCreation_ShouldNotCauseInfiniteRecursion()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+
+            // If there was infinite recursion, test would never end
+            _s1.AddEmployeeServiceProvidedBy(emp);
+
+            Assert.Pass(); // If we reach here, no infinite recursion happened
+        }
+        
+        
+        [Test]
+        public void ChainedAssociations_ShouldAllBeConsistent()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            emp.AddServiceToEmployee(s2);
+
+            Assert.That(emp.ProvidesServices, Contains.Item(_s1));
+            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+
+            Assert.That(_s1.ProvidedBy, Contains.Item(emp));
+            Assert.That(s2.ProvidedBy, Contains.Item(emp));
         }
     }
 }
