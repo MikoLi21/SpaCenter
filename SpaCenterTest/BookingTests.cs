@@ -13,15 +13,17 @@ namespace SpaCenterTest
         private Customer _cust = null!;
         private Employee _emp = null!;
         private Service _svc = null!;
+        private List<Service> _services = new List<Service>();
 
         [SetUp]
         public void SetUp()
         {
             Booking.LoadExtent(new List<Booking>());
+            _services.Add(new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16));
 
             _cust = new Customer("Anna", "Nowak", "anna@example.com", "111222333", new DateTime(2000, 1, 1));
             _emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777", 12345678901,
-                DateTime.Today.AddYears(-5), 4);
+                DateTime.Today.AddYears(-5), 4, _services);
             _svc = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
         }
 

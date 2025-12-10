@@ -16,11 +16,10 @@ public class PersistenceTest
         Branch.LoadExtent(new List<Branch>());
         if (File.Exists(PersistenceManager.FilePath))
             File.Delete(PersistenceManager.FilePath);
-        
+        var s1 = new Service("Thai Massage", "Message in thai style", new TimeSpan(1, 0, 0), 300, 10);
         var c1 = new Customer("Anna", "Brown", "annabrown@gmail.com", "+48111222333", new DateTime(1999, 01, 01));
         var e1 = new Employee("Bob", "Smith", "bobsmith666@gmail.com", "+48000555999", 45678901177, DateTime.Today, 3);
         var e2 = new Employee("John", "Black", "john7876@gmail.com", "+48777111777", 78903156789, new DateTime(2024, 05, 06),5.5m,  new DateTime(2025, 01, 01));
-        var s1 = new Service("Thai Massage", "Message in thai style", new TimeSpan(1, 0, 0), 300, 10);
         var bk1 = new Booking(c1, s1,e1, new DateTime(2025, 11, 25, 14, 30, 0), PaymentMethod.AtTheSPA);
         
         List<string> phones = new List<string>

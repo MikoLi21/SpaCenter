@@ -18,10 +18,12 @@ public class Service
     private Service? _nextService;
     private Service? _previousService;
     
-    //reflex association 
-    private readonly List<Service> _subServices = new List<Service>();
-    public IReadOnlyList<Service> SubServices => _subServices.AsReadOnly();
-    //reverse connection
+    //reflex association
+    private readonly List<Service> _serviceTo = new List<Service>(); 
+    private readonly List<Service> _serviceOf = new List<Service>();
+    public IReadOnlyList<Service> ServiceTo => _serviceTo.AsReadOnly();
+    public IReadOnlyList<Service> ServiceOf => _serviceOf.AsReadOnly();
+    //Employee provides > Service association (Basic)
     private HashSet<Employee> _providedBy = new HashSet<Employee>();
     public IEnumerable<Employee> ProvidedBy => _providedBy.ToHashSet();
     
@@ -58,27 +60,62 @@ public class Service
         _providedBy.Remove(employee);
     }
     
-    public void AddSubService(Service subService)
+    //Reflexive association
+    public void AddServiceTo(Service service)
     {
-        if (subService == null)
-            throw new ArgumentNullException(nameof(subService), "Sub-service cannot be null");
+        if (service == null)
+            throw new ArgumentNullException(nameof(service));
 
-        if (ReferenceEquals(this, subService))
-            throw new ArgumentException("Service cannot be part of itself");
+        if (service == this)
+            throw new InvalidOperationException("A service can't be a service to itself");
 
-        if (_subServices.Contains(subService))
-            return; 
+        if (_serviceTo.Contains(service))
+            return; // already linked
 
-        _subServices.Add(subService);
+        _serviceTo.Add(service);
+
+        // Add reverse association
+        if (!service._serviceOf.Contains(this))
+            service._serviceOf.Add(this);
     }
-
-   
-    public void RemoveSubService(Service subService)
+    
+    public void RemoveServiceTo(Service service)
     {
-        if (subService == null)
-            throw new ArgumentNullException(nameof(subService), "Sub-service cannot be null");
+        if (service== null) return;
 
-        _subServices.Remove(subService);
+        if (_serviceTo.Remove(service))
+        {
+            // Remove reverse association
+            service._serviceOf.Remove(this);
+        }
+    }
+    
+    public void AddServiceOf(Service service)
+    {
+        if (service == null)
+            throw new ArgumentNullException(nameof(service));
+
+        if (service == this)
+            throw new InvalidOperationException("A service can't consist of itself");
+
+        if (_serviceOf.Contains(service))
+            return;
+
+        _serviceOf.Add(service);
+
+        // Add reverse association
+        if (!service._serviceTo.Contains(this))
+            service._serviceTo.Add(this);
+    }
+    
+    public void RemoveServiceOf(Service service)
+    {
+        if (service == null) return;
+
+        if (_serviceOf.Remove(service))
+        {
+            service._serviceTo.Remove(this);
+        }
     }
 
       

@@ -34,6 +34,9 @@ public class Employee : Person
     }
     public void RemoveServiceFromEmployee(Service service)
     {
+        if (_providesServices.Count == 1 && _providesServices.Contains(service))
+            throw new InvalidOperationException("An employee must provide at least one service");
+        
         if (service == null)
             throw new ArgumentNullException(nameof(service));
 
@@ -123,25 +126,37 @@ public class Employee : Person
     public IEnumerable<Booking> AssignedTo => _assignedTo.ToHashSet();
     
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        decimal yearsOfExperience)
+        decimal yearsOfExperience, IEnumerable<Service> services)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
         HireDate = hireDate;
         YearsOfExperience = yearsOfExperience;
+        
+        if (services == null || !services.Any())
+            throw new ArgumentException("An employee must provide at least one service");
 
+        foreach (var service in services)
+            AddServiceToEmployee(service);
+        
         addEmployee(this);
     }
 
     [JsonConstructor]
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        decimal yearsOfExperience, DateTime? leaveDate = null)
+        decimal yearsOfExperience, IEnumerable<Service> services, DateTime? leaveDate = null)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
         HireDate = hireDate;
         LeaveDate = leaveDate;
         YearsOfExperience = yearsOfExperience;
+        
+        if (services == null || !services.Any())
+            throw new ArgumentException("An employee must provide at least one service");
+
+        foreach (var service in services)
+            AddServiceToEmployee(service);
         
         addEmployee(this);
     }

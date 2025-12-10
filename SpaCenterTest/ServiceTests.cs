@@ -96,89 +96,122 @@ namespace SpaCenterTest
         }
         
         
-        //association
+        //reflexive association testing
         [Test]
-        public void AddSubService_CreatesAssociation()
+        public void AddServiceTo_ShouldCreateForwardAndReverseAssociation()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
-            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
 
-            main.AddSubService(sub);
+            s2.AddServiceTo(s1);
 
-            Assert.That(main.SubServices.Count, Is.EqualTo(1));
-            Assert.That(main.SubServices[0], Is.EqualTo(sub));
+            Assert.That(s2.ServiceTo, Contains.Item(s1));
+            Assert.That(s1.ServiceOf, Contains.Item(s2));
         }
-
+        
         [Test]
-        public void AddSubService_DoesNotAddDuplicate()
+        public void AddServiceTo_ShouldThrow_WhenServiceReferencesItself()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
-            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
 
-            main.AddSubService(sub);
-            main.AddSubService(sub); 
-
-            Assert.That(main.SubServices.Count, Is.EqualTo(1));
+            Assert.Throws<InvalidOperationException>(() => s1.AddServiceTo(s1));
         }
-
+        
         [Test]
-        public void RemoveSubService_RemovesAssociation()
+        public void AddServiceTo_ShouldAllowMultipleServicesTo()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
-            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
+            var s3 = new Service("Aromatherapy", "oil aroma", TimeSpan.FromMinutes(40), 200m, 5);
 
-            main.AddSubService(sub);
-            main.RemoveSubService(sub);
-
-            Assert.That(main.SubServices.Count, Is.EqualTo(0));
+            s3.AddServiceTo(s2);
+            s3.AddServiceTo(s1);
+            
+            Assert.That(s3.ServiceTo.Count, Is.EqualTo(2));
+            Assert.That(s2.ServiceOf, Contains.Item(s3));
+            Assert.That(s1.ServiceOf, Contains.Item(s3));
         }
-
+        
         [Test]
-        public void RemoveSubService_DoesNothing_WhenSubServiceNotPresent()
+        public void AddServiceTo_ShouldNotDuplicateEntries()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
-            var sub = new Service("Sub", "Sub desc", TimeSpan.FromMinutes(15), 50m, 5);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
 
-           
-            main.RemoveSubService(sub);
+            s1.AddServiceTo(s2);
+            s1.AddServiceTo(s2);   // second call should be ignored
 
-            Assert.That(main.SubServices.Count, Is.EqualTo(0));
+            Assert.That(s1.ServiceTo.Count, Is.EqualTo(1));
+            Assert.That(s2.ServiceOf.Count, Is.EqualTo(1));
         }
-
+        
         [Test]
-        public void AddSubService_ThrowsException_WhenSubServiceIsNull()
+        public void RemoveServiceTo_ShouldRemoveForwardAndReverseAssociation()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
 
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                main.AddSubService(null!)
-            );
+            s2.AddServiceTo(s1);
+            s2.RemoveServiceTo(s1);
 
-            Assert.That(ex!.Message, Does.Contain("Sub-service cannot be null"));
+            Assert.That(s2.ServiceTo.Count, Is.EqualTo(0));
+            Assert.That(s1.ServiceOf.Count, Is.EqualTo(0));
         }
-
+        
         [Test]
-        public void AddSubService_ThrowsException_WhenServiceAddsItself()
+        public void AddServiceOf_ShouldCreateForwardAndReverseAssociation()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
 
-            var ex = Assert.Throws<ArgumentException>(() =>
-                main.AddSubService(main)
-            );
+            s1.AddServiceOf(s2);
 
-            Assert.That(ex!.Message, Does.Contain("Service cannot be part of itself"));
+            Assert.That(s1.ServiceOf, Contains.Item(s2));
+            Assert.That(s2.ServiceTo, Contains.Item(s1));
         }
-
+        
         [Test]
-        public void RemoveSubService_ThrowsException_WhenSubServiceIsNull()
+        public void AddServiceOf_ShouldAllowMultipleServicesOf()
         {
-            var main = new Service("Main", "Main desc", TimeSpan.FromMinutes(30), 100m, 10);
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
+            var s3 = new Service("Aromatherapy", "oil aroma", TimeSpan.FromMinutes(40), 200m, 5);
 
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                main.RemoveSubService(null!)
-            );
+            s1.AddServiceOf(s3);
+            s2.AddServiceOf(s3);
 
-            Assert.That(ex!.Message, Does.Contain("Sub-service cannot be null"));
+            Assert.That(s3.ServiceTo.Count, Is.EqualTo(2));
+            Assert.That(s2.ServiceOf, Contains.Item(s3));
+            Assert.That(s1.ServiceOf, Contains.Item(s3));
+        }
+        
+        [Test]
+        public void RemoveServiceOf_ShouldRemoveForwardAndReverseAssociation()
+        {
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
+
+            s1.AddServiceOf(s2);
+            s1.RemoveServiceOf(s2);
+
+            Assert.That(s2.ServiceTo.Count, Is.EqualTo(0));
+            Assert.That(s1.ServiceOf.Count, Is.EqualTo(0));
+        }
+        
+        [Test]
+        public void ShouldSupportLongChainsOfServicesTo()
+        {
+            var s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            var s2 = new Service("Face Mask", "face mask grey", TimeSpan.FromMinutes(40), 200m, 16);
+            var s3 = new Service("Aromatherapy", "oil aroma", TimeSpan.FromMinutes(40), 200m, 5);
+
+            s3.AddServiceTo(s2);
+            s2.AddServiceTo(s1);
+
+            Assert.That(s1.ServiceOf, Contains.Item(s2));
+            Assert.That(s2.ServiceOf, Contains.Item(s3));
+            Assert.That(s2.ServiceTo, Contains.Item(s1));
+            Assert.That(s3.ServiceTo, Contains.Item(s2));
         }
     }
 }
