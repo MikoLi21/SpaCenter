@@ -68,7 +68,7 @@ public class Employee : Person
             _pesel = value;
         }
     }
-
+    
     public DateTime HireDate
     {
         get => _hireDate;
@@ -124,6 +124,20 @@ public class Employee : Person
     private HashSet<Booking> _assignedTo = new HashSet<Booking>();
 
     public IEnumerable<Booking> AssignedTo => _assignedTo.ToHashSet();
+    
+    //Qualified association 
+    private readonly HashSet<Branch> _branches = new();
+    public IEnumerable<Branch> Branches => _branches.ToHashSet();
+
+    internal void AddBranchReverse(Branch branch)
+    {
+        _branches.Add(branch);
+    }
+
+    internal void RemoveBranchReverse(Branch branch)
+    {
+        _branches.Remove(branch);
+    }
     
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
         decimal yearsOfExperience, IEnumerable<Service> services)
