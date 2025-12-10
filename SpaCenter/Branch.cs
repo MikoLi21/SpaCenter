@@ -53,13 +53,38 @@ public class Branch
     
     //Qualified association
     private readonly Dictionary<long, Employee> _employeesByPesel = new();
+
     public IReadOnlyDictionary<long, Employee> EmployeesByPesel => _employeesByPesel;
     public IEnumerable<Employee> Employees => _employeesByPesel.Values;
+
     public Employee? GetEmployeeByPesel(long pesel)
     {
         _employeesByPesel.TryGetValue(pesel, out var employee);
         return employee;
     }
+
+    
+    public void AddEmployee(Employee employee)
+    {
+        if (employee == null)
+            throw new ArgumentNullException(nameof(employee));
+
+        long pesel = employee.Pesel;
+
+        
+        if (_employeesByPesel.ContainsKey(pesel))
+            throw new ArgumentException("Employee with same PESEL already assigned to this branch");
+
+       
+        if (employee.Branches.Any() && !employee.Branches.Contains(this))
+            throw new InvalidOperationException("Employee already assigned to a different branch");
+
+        _employeesByPesel.Add(pesel, employee);
+
+        
+        employee.AddBranchReverse(this);
+    }
+
     
     public void UpdateEmployeePesel(long oldPesel, long newPesel)
     {
@@ -71,15 +96,20 @@ public class Branch
 
         var employee = _employeesByPesel[oldPesel];
 
-        
+       
         employee.Pesel = newPesel;
 
         _employeesByPesel.Remove(oldPesel);
         _employeesByPesel.Add(newPesel, employee);
     }
+
     
     public void RemoveEmployee(long pesel)
     {
+        
+        if (_employeesByPesel.Count == 1 && _employeesByPesel.ContainsKey(pesel))
+            throw new InvalidOperationException("Branch must have at least one employee");
+
         if (_employeesByPesel.TryGetValue(pesel, out var employee))
         {
             _employeesByPesel.Remove(pesel);
