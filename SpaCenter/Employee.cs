@@ -120,7 +120,7 @@ public class Employee : Person
     public double AverageServiceMinutes => CalculateAverageServiceMinute();
     
     //private List<Booking> Bookings { get; set; } = new List<Booking>();
-    
+    //Aggregation Association 
     private HashSet<Booking> _assignedTo = new HashSet<Booking>();
 
     public IEnumerable<Booking> AssignedTo => _assignedTo.ToHashSet();

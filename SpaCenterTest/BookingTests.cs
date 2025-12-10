@@ -152,5 +152,113 @@ namespace SpaCenterTest
             // Extent should remain empty
             Assert.That(Booking.Bookings.Count, Is.EqualTo(0));
         }
+        //Aggregation association tests
+         [Test]
+        public void Constructor_Throws_WhenEmployeeAlreadyHasBookingOnSameDate()
+        {
+            var date = DateTime.Today.AddDays(1);
+
+            
+            var first = new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA);
+
+            
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA));
+
+            Assert.That(ex!.Message, Is.EqualTo("Employee already has appointment at this time"));
+        }
+
+        
+
+        [Test]
+        public void SetEmployee_ChangesEmployee_AndUpdatesReverseConnection()
+        {
+            var date = DateTime.Today.AddDays(2);
+            var emp2Services = new List<Service> { _svc };
+            var emp2 = new Employee("John", "Black", "john@example.com", "777666555",
+                98765432101, DateTime.Today.AddYears(-3), 3, emp2Services);
+
+            var booking = new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA);
+
+           
+            booking.SetEmployee(emp2);
+
+            
+            Assert.That(booking.Employee, Is.EqualTo(emp2));
+
+            
+            Assert.That(_emp.AssignedTo.Contains(booking), Is.False);
+
+            
+            Assert.That(emp2.AssignedTo.Contains(booking), Is.True);
+        }
+
+        
+
+        [Test]
+        public void SetEmployee_SameEmployee_DoesNothing()
+        {
+            var date = DateTime.Today.AddDays(3);
+            var booking = new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA);
+
+            var countBefore = _emp.AssignedTo.Count();
+
+            booking.SetEmployee(_emp);
+
+            var countAfter = _emp.AssignedTo.Count();
+
+            Assert.That(booking.Employee, Is.EqualTo(_emp));
+            Assert.That(countAfter, Is.EqualTo(countBefore)); 
+        }
+
+        
+
+        [Test]
+        public void SetEmployee_Throws_WhenEmployeeIsNull()
+        {
+            var date = DateTime.Today.AddDays(4);
+            var booking = new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA);
+
+            var ex = Assert.Throws<ArgumentNullException>(() => booking.SetEmployee(null!));
+            Assert.That(ex!.ParamName, Is.EqualTo("employee"));
+        }
+
+        
+
+        [Test]
+        public void SetEmployee_Throws_WhenNewEmployeeAlreadyHasBookingOnSameDate()
+        {
+            var date = DateTime.Today.AddDays(5);
+
+            var emp1 = _emp; 
+            var emp2Services = new List<Service> { _svc };
+            var emp2 = new Employee("John", "Black", "john@example.com", "777666555",
+                98765432101, DateTime.Today.AddYears(-3), 3, emp2Services);
+
+            
+            var booking1 = new Booking(_cust, _svc, emp2, date, PaymentMethod.AtTheSPA);
+
+           
+            var booking2 = new Booking(_cust, _svc, emp1, date, PaymentMethod.AtTheSPA);
+
+            var ex = Assert.Throws<InvalidOperationException>(() => booking2.SetEmployee(emp2));
+            Assert.That(ex!.Message, Is.EqualTo("Employee already has appointment at this time"));
+        }
+
+        
+
+        [Test]
+        public void RemoveEmployee_RemovesAssociationFromBothSides()
+        {
+            var date = DateTime.Today.AddDays(6);
+            var booking = new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA);
+
+           
+            booking.RemoveEmployee();
+
+            Assert.That(booking.Employee, Is.Null);
+            Assert.That(_emp.AssignedTo.Contains(booking), Is.False);
+        }
+    
     }
 }

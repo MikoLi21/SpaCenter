@@ -145,5 +145,162 @@ namespace SpaCenterTest
             var first = Branch.Branches[0];
             Assert.That(first.Name, Is.EqualTo("New Name"));
         }
+        //Qualified Association Tests
+        [Test]
+        public void AddEmployee_CreatesQualifiedAssociation_AndReverseConnection()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+
+            var services = new List<Service>
+            {
+                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
+            };
+
+            var employee = new Employee(
+                "Eva", "Kowalska", "eva@example.com", "999888777",
+                12345678901, DateTime.Today.AddYears(-1), 4, services);
+
+            branch.AddEmployee(employee);
+
+            
+            Assert.That(branch.EmployeesByPesel.ContainsKey(employee.Pesel), Is.True);
+            Assert.That(branch.EmployeesByPesel[employee.Pesel], Is.EqualTo(employee));
+
+            
+            Assert.That(employee.Branches, Contains.Item(branch));
+        }
+
+        
+        [Test]
+        public void RemoveEmployee_RemovesFromBothSides_WhenMoreThanOneEmployee()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+
+            var services = new List<Service>
+            {
+                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
+            };
+
+            var emp1 = new Employee("E1", "A", "e1@example.com", "111111111",
+                11111111111, DateTime.Today.AddYears(-2), 3, services);
+
+            var emp2 = new Employee("E2", "B", "e2@example.com", "222222222",
+                22222222222, DateTime.Today.AddYears(-3), 5, services);
+
+            branch.AddEmployee(emp1);
+            branch.AddEmployee(emp2);
+
+            branch.RemoveEmployee(emp1.Pesel);
+
+            
+            Assert.That(branch.EmployeesByPesel.ContainsKey(emp1.Pesel), Is.False);
+            
+            Assert.That(emp1.Branches, Does.Not.Contain(branch));
+
+            
+            Assert.That(branch.EmployeesByPesel.ContainsKey(emp2.Pesel), Is.True);
+            Assert.That(emp2.Branches, Contains.Item(branch));
+        }
+
+        
+        [Test]
+        public void RemoveEmployee_Throws_WhenRemovingLastEmployeeFromBranch()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+
+            var services = new List<Service>
+            {
+                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
+            };
+
+            var emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777",
+                12345678901, DateTime.Today.AddYears(-1), 4, services);
+
+            branch.AddEmployee(emp);
+
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                branch.RemoveEmployee(emp.Pesel));
+
+            Assert.That(ex!.Message, Is.EqualTo("Branch must have at least one employee"));
+        }
+
+        
+        [Test]
+        public void UpdateEmployeePesel_ChangesDictionaryKey_AndKeepsReverse()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+
+            var services = new List<Service>
+            {
+                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
+            };
+
+            long oldPesel = 12345678901;
+            long newPesel = 98765432109;
+
+            var emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777",
+                oldPesel, DateTime.Today.AddYears(-1), 4, services);
+
+            branch.AddEmployee(emp);
+
+            branch.UpdateEmployeePesel(oldPesel, newPesel);
+
+            
+            Assert.That(branch.GetEmployeeByPesel(oldPesel), Is.Null);
+            
+            Assert.That(branch.GetEmployeeByPesel(newPesel), Is.EqualTo(emp));
+           
+            Assert.That(emp.Pesel, Is.EqualTo(newPesel));
+        }
+
+        
+        [Test]
+        public void AddEmployee_Throws_WhenPeselAlreadyUsedInBranch()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+
+            var services = new List<Service>
+            {
+                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
+            };
+
+            long pesel = 12345678901;
+
+            var emp1 = new Employee("E1", "A", "e1@example.com", "111111111",
+                pesel, DateTime.Today.AddYears(-2), 3, services);
+
+            var emp2 = new Employee("E2", "B", "e2@example.com", "222222222",
+                pesel, DateTime.Today.AddYears(-3), 5, services);
+
+            branch.AddEmployee(emp1);
+
+            var ex = Assert.Throws<ArgumentException>(() =>
+                branch.AddEmployee(emp2));
+
+            Assert.That(ex!.Message, Is.EqualTo("Employee with same PESEL already assigned to this branch"));
+        }
+
+       
+        [Test]
+        public void AddEmployee_Throws_WhenEmployeeAlreadyAssignedToAnotherBranch()
+        {
+            var branch1 = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            var branch2 = new Branch("SPA Krakow", _address, new List<string> { "+48123456780" });
+
+            var services = new List<Service>
+            {
+                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
+            };
+
+            var emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777",
+                12345678901, DateTime.Today.AddYears(-1), 4, services);
+
+            branch1.AddEmployee(emp);
+
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                branch2.AddEmployee(emp));
+
+            Assert.That(ex!.Message, Is.EqualTo("Employee already assigned to a different branch"));
+        }
     }
 }
