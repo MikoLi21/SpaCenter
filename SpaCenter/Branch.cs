@@ -51,6 +51,42 @@ public class Branch
     
     private static readonly Regex PhoneRegex = new(@"^(?:\+48)? ?\d{9}$");
     
+    //Qualified association
+    private readonly Dictionary<long, Employee> _employeesByPesel = new();
+    public IReadOnlyDictionary<long, Employee> EmployeesByPesel => _employeesByPesel;
+    public IEnumerable<Employee> Employees => _employeesByPesel.Values;
+    public Employee? GetEmployeeByPesel(long pesel)
+    {
+        _employeesByPesel.TryGetValue(pesel, out var employee);
+        return employee;
+    }
+    
+    public void UpdateEmployeePesel(long oldPesel, long newPesel)
+    {
+        if (!_employeesByPesel.ContainsKey(oldPesel))
+            throw new ArgumentException("Employee with old PESEL does not exist");
+
+        if (_employeesByPesel.ContainsKey(newPesel))
+            throw new ArgumentException("New PESEL already exists");
+
+        var employee = _employeesByPesel[oldPesel];
+
+        
+        employee.Pesel = newPesel;
+
+        _employeesByPesel.Remove(oldPesel);
+        _employeesByPesel.Add(newPesel, employee);
+    }
+    
+    public void RemoveEmployee(long pesel)
+    {
+        if (_employeesByPesel.TryGetValue(pesel, out var employee))
+        {
+            _employeesByPesel.Remove(pesel);
+            employee.RemoveBranchReverse(this); // reverse removal
+        }
+    }
+
     [JsonConstructor]
     public Branch(string name, Address address, List<string> phoneNumbers)
     {
