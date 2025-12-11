@@ -34,6 +34,9 @@ public class Employee : Person
     }
     public void RemoveServiceFromEmployee(Service service)
     {
+        if (_providesServices.Count == 1 && _providesServices.Contains(service))
+            throw new InvalidOperationException("An employee must provide at least one service");
+        
         if (service == null)
             throw new ArgumentNullException(nameof(service));
 
@@ -65,7 +68,7 @@ public class Employee : Person
             _pesel = value;
         }
     }
-
+    
     public DateTime HireDate
     {
         get => _hireDate;
@@ -117,25 +120,45 @@ public class Employee : Person
     public double AverageServiceMinutes => CalculateAverageServiceMinute();
     
     //private List<Booking> Bookings { get; set; } = new List<Booking>();
-    
+    //Aggregation Association 
     private HashSet<Booking> _assignedTo = new HashSet<Booking>();
 
     public IEnumerable<Booking> AssignedTo => _assignedTo.ToHashSet();
     
+    //Qualified association 
+    private readonly HashSet<Branch> _branches = new();
+    public IEnumerable<Branch> Branches => _branches.ToHashSet();
+
+    internal void AddBranchReverse(Branch branch)
+    {
+        _branches.Add(branch);
+    }
+
+    internal void RemoveBranchReverse(Branch branch)
+    {
+        _branches.Remove(branch);
+    }
+    
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        decimal yearsOfExperience)
+        decimal yearsOfExperience, IEnumerable<Service> services)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
         HireDate = hireDate;
         YearsOfExperience = yearsOfExperience;
+        
+        if (services == null || !services.Any())
+            throw new ArgumentException("An employee must provide at least one service");
 
+        foreach (var service in services)
+            AddServiceToEmployee(service);
+        
         addEmployee(this);
     }
 
     [JsonConstructor]
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        decimal yearsOfExperience, DateTime? leaveDate = null)
+        decimal yearsOfExperience, IEnumerable<Service> services, DateTime? leaveDate = null)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
@@ -143,6 +166,11 @@ public class Employee : Person
         LeaveDate = leaveDate;
         YearsOfExperience = yearsOfExperience;
         
+        if (services == null || !services.Any())
+            throw new ArgumentException("An employee must provide at least one service");
+
+        foreach (var service in services)
+            AddServiceToEmployee(service);
         addEmployee(this);
     }
 

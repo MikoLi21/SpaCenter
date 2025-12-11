@@ -33,7 +33,7 @@ namespace SpaCenter
 
         public Customer Customer => _customer;
         public Service Service => _service;
-        
+        //Aggregation association 
         private Employee _employee;  // ONE employee
 
         public Employee Employee => _employee;

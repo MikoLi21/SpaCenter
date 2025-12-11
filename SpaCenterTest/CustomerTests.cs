@@ -120,10 +120,11 @@ namespace SpaCenterTest
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer = new Customer(_name, _surname, _email, _phone, _dob);
-            
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
             
@@ -153,10 +154,11 @@ namespace SpaCenterTest
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer1 = new Customer(_name, _surname, _email, _phone, _dob);
             var customer2 = new Customer("John", "Smith", "john@test.com", "+48123456789", new DateTime(1990, 1, 1));
-            
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking1 = customer1.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
             var booking2 = customer1.BookService(PaymentMethod.AtTheSPA, new DateTime(2025, 12, 18), service, employee);
@@ -179,10 +181,11 @@ namespace SpaCenterTest
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer1 = new Customer(_name, _surname, _email, _phone, _dob);
             var customer2 = new Customer("John", "Smith", "john@test.com", "+48123456789", new DateTime(1990, 1, 1));
-            
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking1 = customer1.BookService(PaymentMethod.AtTheSPA,new DateTime(2025, 12, 18, 14, 30, 0), service, employee);
             
@@ -203,9 +206,11 @@ namespace SpaCenterTest
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer = new Customer(_name, _surname, _email, _phone, _dob);
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking = customer.BookService(PaymentMethod.AtTheSPA,new DateTime(2025, 12, 18, 14, 30, 0), service, employee);
 
@@ -223,9 +228,11 @@ namespace SpaCenterTest
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer = new Customer(_name, _surname, _email, _phone, _dob);
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking1 = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
             var booking2 = customer.BookService(PaymentMethod.AtTheSPA, new DateTime(2025, 12, 18), service, employee);
@@ -243,9 +250,11 @@ namespace SpaCenterTest
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer = new Customer(_name, _surname, _email, _phone, _dob);
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking1 = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
 
@@ -263,9 +272,11 @@ namespace SpaCenterTest
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
             var customer = new Customer(_name, _surname, _email, _phone, _dob);
+            var services =  new List<Service>();
+            services.Add(service);
             var employee = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5, services);
 
             var booking1 = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
 

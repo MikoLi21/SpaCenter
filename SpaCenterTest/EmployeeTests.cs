@@ -15,6 +15,8 @@ namespace SpaCenterTest
         private long _pesel;
         private DateTime _hireDate;
         private decimal _years;
+        private List<Service> _services = new List<Service>();
+        private Service _s1;
 
         [SetUp]
         public void Setup()
@@ -29,55 +31,59 @@ namespace SpaCenterTest
 
             
             _validHireDate = DateTime.Today.AddYears(-1);
+            _s1 = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            _services.Add(_s1);
+
+            
         }
 
 
         [Test]
         public void Constructor_SetsNameCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.Name, Is.EqualTo(_name));
         }
 
         [Test]
         public void Constructor_SetsSurnameCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.Surname, Is.EqualTo(_surname));
         }
 
         [Test]
         public void Constructor_SetsEmailCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.Email, Is.EqualTo(_email));
         }
 
         [Test]
         public void Constructor_SetsPhoneCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.PhoneNumber, Is.EqualTo(_phone));
         }
 
         [Test]
         public void Constructor_SetsPeselCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.Pesel, Is.EqualTo(_pesel));
         }
 
         [Test]
         public void Constructor_SetsHireDateCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.HireDate, Is.EqualTo(_hireDate));
         }
 
         [Test]
         public void Constructor_SetsYearsOfExperienceCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years);
+            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
             Assert.That(e.YearsOfExperience, Is.EqualTo(_years));
         }
 
@@ -93,7 +99,8 @@ namespace SpaCenterTest
                     phoneNumber: "123456789",
                     pesel: 1234,               
                     hireDate: _validHireDate,
-                    yearsOfExperience: 5
+                    yearsOfExperience: 5,
+                    services: _services
                 ));
 
             Assert.That(ex.Message, Is.EqualTo("Invalid pesel number"));
@@ -113,7 +120,8 @@ namespace SpaCenterTest
                     phoneNumber: "123456789",
                     pesel: 12345678901,
                     hireDate: futureHire,     
-                    yearsOfExperience: 5
+                    yearsOfExperience: 5,
+                    services: _services
                 ));
 
             Assert.That(ex.Message, Is.EqualTo("Hire date can't be in the future"));
@@ -125,7 +133,7 @@ namespace SpaCenterTest
         {
             var employee = new Employee(
                 "Anna", "Smith", "anna@example.com", "123456789",
-                12345678901, _validHireDate, 5
+                12345678901, _validHireDate, 5, _services
             );
 
             var invalidLeave = _validHireDate.AddDays(-1);
@@ -144,7 +152,7 @@ namespace SpaCenterTest
         {
             var employee = new Employee(
                 "Anna", "Smith", "anna@example.com", "123456789",
-                12345678901, _validHireDate, 5
+                12345678901, _validHireDate, 5, _services
             );
 
             var futureLeave = DateTime.Today.AddDays(1);
@@ -165,7 +173,8 @@ namespace SpaCenterTest
                 new Employee(
                     "Anna", "Smith", "anna@example.com", "123456789",
                     12345678901, _validHireDate,
-                    yearsOfExperience: 50      
+                    yearsOfExperience: 50   ,
+                    services: _services   
                 ));
 
             Assert.That(ex.Message,
@@ -177,7 +186,8 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5 ,
+                services: _services);
 
             var extent = Employee.Employees;
             
@@ -194,7 +204,8 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5);
+                12345678901, DateTime.Today.AddYears(-1), 5,
+                services: _services);
             
             emp.YearsOfExperience = 10;
             
@@ -202,75 +213,234 @@ namespace SpaCenterTest
             
             Assert.That(stored.YearsOfExperience, Is.EqualTo(10));
         }
-    }
-}
-
-/*
-namespace SpaCenter.Tests
-{
-    [TestFixture]
-    public class EmployeeTests
-    {
-        [SetUp]
-        public void SetUp()
+        private Customer CreateCustomer(string name = "Test")
         {
-            Customer.AllCustomers.Clear();
-            Employee.AllEmployees.Clear();
-            Booking.AllBookings.Clear();
-            Service.AllServices.Clear();
+            return new Customer(
+                name,
+                "Customer",
+                $"{name.ToLower()}@example.com",
+                "123456789",
+                new DateTime(1990, 1, 1));
         }
 
-        [Test]
-        public void YearsOfService_Computed_From_HireDate()
+        private Booking CreateBooking(Employee emp, DateTime date)
         {
-            var years = 4;
-            var e = new TestEmployee("Eva", "K", "e@b.com", "1", "12345678901", DateTime.Today.AddYears(-years));
-            Assert.That(e.YearsOfService, Is.EqualTo(years));
+            var cust = CreateCustomer("Anna");
+            var svc = new Service("MassageX", "Test", TimeSpan.FromMinutes(30), 100m, 16);
+            return new Booking(cust, svc, emp, date, PaymentMethod.AtTheSPA);
         }
 
+        // Aggregation association Tests
+
         [Test]
-        public void AverageServiceMinutes_From_Bookings_With_Service()
+        public void AddBookingEmployeeAssignedTo_Throws_WhenBookingIsNull()
         {
-            var e = new TestEmployee("Eva", "K", "e@b.com", "1", "12345678901", DateTime.Today.AddYears(-5));
-            var c = new Customer("Anna", "N", "a@b.com", "2", new DateTime(2000,1,1));
+            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
 
-            var b1 = new Booking(c, e, DateTime.Today, new TimeSpan(10,0,0), "cash") { Service = new Service("S1", "D1", 60, 10m, 0) };
-            var b2 = new Booking(c, e, DateTime.Today, new TimeSpan(11,0,0), "cash") { Service = new Service("S2", "D2", 30, 10m, 0) };
-            var b3 = new Booking(c, e, DateTime.Today, new TimeSpan(12,0,0), "cash") { Service = new Service("S3", "D3", 45, 10m, 0) };
-
-            e.Bookings.Add(b1);
-            e.Bookings.Add(b2);
-            e.Bookings.Add(b3);
-
-            Assert.That(e.AverageServiceMinutes, Is.EqualTo((60 + 30 + 45) / 3.0).Within(0.001));
+            var ex = Assert.Throws<ArgumentNullException>(() => emp.AddBookingEmployeeAssignedTo(null!));
+            Assert.That(ex!.ParamName, Is.EqualTo("booking"));
         }
 
-        [Test]
-        public void AverageServiceMinutes_NoBookings_Or_NullService_Returns_Zero()
-        {
-            var e = new TestEmployee("Eva", "K", "e@b.com", "1", "12345678901", DateTime.Today.AddYears(-5));
-            Assert.That(e.AverageServiceMinutes, Is.EqualTo(0));
-
-            var c = new Customer("Anna", "N", "a@b.com", "2", new DateTime(2000,1,1));
-            var b = new Booking(c, e, DateTime.Today, new TimeSpan(10,0,0), "cash"); // Service == null
-            e.Bookings.Add(b);
-            Assert.That(e.AverageServiceMinutes, Is.EqualTo(0));
-        }
+        
 
         [Test]
-        public void CheckYearsOfService_DoesNotThrow()
+        public void AddBookingEmployeeAssignedTo_AddsBooking_AndSetsReverseConnection()
         {
-            var e1 = new TestEmployee("E1", "A", "e1@b.com", "1", "11111111111", DateTime.Today.AddYears(-2));
-            var e2 = new TestEmployee("E2", "B", "e2@b.com", "2", "22222222222", DateTime.Today.AddYears(-3));
+            var emp1 = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
             
-            Assert.DoesNotThrow(() => Employee.CheckYearsOfService());
+            var tempEmp = new Employee("Temp", "E", "temp@example.com", "999999999",
+                55555555555, DateTime.Today.AddYears(-2), 2, _services);
+
+            var booking = CreateBooking(tempEmp, DateTime.Today.AddDays(1));
+
+            
+            booking.RemoveEmployee();
+
+            
+            emp1.AddBookingEmployeeAssignedTo(booking);
+
+            Assert.That(emp1.AssignedTo, Does.Contain(booking));
+            Assert.That(booking.Employee, Is.EqualTo(emp1));
         }
 
-        private sealed class TestEmployee : Employee
+        
+
+        [Test]
+        public void RemoveBookingEmployeeAssignedTo_Throws_WhenBookingIsNull()
         {
-            public TestEmployee(string name, string surname, string email, string phoneNumber, string pesel, DateTime hireDate)
-                : base(name, surname, email, phoneNumber, pesel, hireDate) { }
+            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
+            var ex = Assert.Throws<ArgumentNullException>(() => emp.RemoveBookingEmployeeAssignedTo(null!));
+            Assert.That(ex!.ParamName, Is.EqualTo("booking"));
+        }
+
+        
+
+        [Test]
+        public void RemoveBookingEmployeeAssignedTo_RemovesBooking_AndReverseConnection()
+        {
+            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services);
+
+            var booking = CreateBooking(emp, DateTime.Today.AddDays(2));
+       
+            Assert.That(emp.AssignedTo, Does.Contain(booking));
+            Assert.That(booking.Employee, Is.EqualTo(emp));
+
+            
+            emp.RemoveBookingEmployeeAssignedTo(booking);
+
+            Assert.That(emp.AssignedTo, Does.Not.Contain(booking));
+            Assert.That(booking.Employee, Is.Null);
+        }
+    
+
+        
+        //Employee provides Service association (basic) tests
+        [Test]
+        public void EmployeeConstructor_ShouldRequireAtLeastOneService()
+        {
+            Assert.Throws<ArgumentException>(() => new Employee("John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, Enumerable.Empty<Service>()));
+        }
+        
+        [Test]
+        public void EmployeeConstructor_ShouldCreateReverseAssociations()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+
+            Assert.That(emp.ProvidesServices, Contains.Item(_s1));
+            Assert.That(_s1.ProvidedBy, Contains.Item(emp));
+        }
+        
+        [Test]
+        public void AddEmployeeServiceProvidedBy_ShouldCreateReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            s2.AddEmployeeServiceProvidedBy(emp);
+
+            Assert.That(s2.ProvidedBy, Contains.Item(emp));
+            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+        }
+        
+        [Test]
+        public void AddServiceToEmployee_ShouldCreateReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            emp.AddServiceToEmployee(s2);
+
+            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+            Assert.That(s2.ProvidedBy, Contains.Item(emp));
+        }
+        
+        [Test]
+        public void AddEmployeeServiceProvidedBy_ShouldAvoidDuplicates()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            s2.AddEmployeeServiceProvidedBy(emp);
+            s2.AddEmployeeServiceProvidedBy(emp);
+
+            Assert.That(s2.ProvidedBy.Count, Is.EqualTo(1));
+            Assert.That(emp.ProvidesServices.Count, Is.EqualTo(2));
+        }
+        
+        [Test]
+        public void RemoveEmployeeServiceProvidedBy_ShouldRemoveReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            s2.AddEmployeeServiceProvidedBy(emp);
+            s2.RevomeEmployeeServiceProvidedBy(emp);
+
+            Assert.That(s2.ProvidedBy, Does.Not.Contain(emp));
+            Assert.That(emp.ProvidesServices, Does.Not.Contain(s2));
+        }
+        
+        [Test]
+        public void RemoveServiceFromEmployee_ShouldRemoveReverseAssociation()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+            
+            emp.AddServiceToEmployee(s2);
+            emp.RemoveServiceFromEmployee(s2);
+
+            Assert.That(emp.ProvidesServices, Does.Not.Contain(s2));
+            Assert.That(s2.ProvidedBy, Does.Not.Contain(emp));
+        }
+        
+        [Test]
+        public void RemoveServiceFromEmployee_ShouldThrow_WhenRemovingLastService()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+
+            Assert.Throws<InvalidOperationException>(() => emp.RemoveServiceFromEmployee(_s1));
+        }
+
+        [Test]
+        public void AddEmployeeServiceProvidedBy_ShouldAllowServiceToHaveZeroEmployees()
+        {
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            Assert.That(s2.ProvidedBy.Count, Is.EqualTo(0));
+        }
+        
+        [Test]
+        public void ReverseCreation_ShouldNotCauseInfiniteRecursion()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+
+            // If there was infinite recursion, test would never end
+            _s1.AddEmployeeServiceProvidedBy(emp);
+
+            Assert.Pass(); // If we reach here, no infinite recursion happened
+        }
+        
+        
+        [Test]
+        public void ChainedAssociations_ShouldAllBeConsistent()
+        {
+            var emp = new Employee(
+                "John", "Doe", "john@test.com", "+48123456789",
+                12345678901, DateTime.Today.AddYears(-1), 5, _services);
+            
+            var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
+
+            emp.AddServiceToEmployee(s2);
+
+            Assert.That(emp.ProvidesServices, Contains.Item(_s1));
+            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+
+            Assert.That(_s1.ProvidedBy, Contains.Item(emp));
+            Assert.That(s2.ProvidedBy, Contains.Item(emp));
         }
     }
 }
-*/
