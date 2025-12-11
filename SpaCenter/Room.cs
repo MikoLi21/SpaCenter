@@ -20,12 +20,11 @@ public class Room
         {
             if (value <= 0)
                 throw new ArgumentException("Room number must be greater than 0");
-
             _roomNumber = value;
         }
     }
 
-    private string _type;
+    private string _type = null!;
     public string Type
     {
         get => _type;
@@ -33,7 +32,6 @@ public class Room
         {
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentNullException("Room type cannot be empty");
-
             _type = value;
         }
     }
@@ -46,7 +44,6 @@ public class Room
         {
             if (value < 0)
                 throw new ArgumentException("Temperature can't be below 0°C");
-
             _temperature = value;
         }
     }
@@ -59,25 +56,25 @@ public class Room
         {
             if (value < 0 || value > 100)
                 throw new ArgumentException("Humidity level must be between 0% and 100%");
-
             _humidityLevel = value;
         }
     }
-
-    [JsonConstructor]
-    public Room(int roomNumber, string type, double temperature, double humidityLevel, Branch branch)
+    
+    internal Room(int roomNumber, string type, double temperature, double humidityLevel, Branch branch)
     {
+        if (branch == null)
+            throw new ArgumentNullException("Room must belong to a branch");
+
         RoomNumber = roomNumber;
         Type = type;
         Temperature = temperature;
         HumidityLevel = humidityLevel;
-        
-        if(branch == null)
-            throw new ArgumentNullException("Room must belong to a branch");
-        branch.AddRoom(this); //branch.AddRoom(this) also sets reverse connection so no need for extra Branch = branch
+
+        Branch = branch;
         addRoom(this);
+        branch.AddRoomInternal(this);
     }
-    
+
     private static void addRoom(Room room)
     {
         if (room == null)
@@ -89,20 +86,13 @@ public class Room
     public static void LoadExtent(IEnumerable<Room>? list)
     {
         rooms_List.Clear();
-
         if (list == null) return;
-
         rooms_List.AddRange(list);
-    }
-
-    internal void SetBranchReverse(Branch branch)
-    {
-        Branch = branch;
     }
 
     internal void RemoveBranchReverse()
     {
-        Branch = null;
+        Branch = null!;
     }
 
     internal static void DeleteRoom(Room room)
