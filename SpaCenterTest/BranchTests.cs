@@ -14,6 +14,9 @@ namespace SpaCenterTest
         public void SetUp()
         {
             _address = new Address("Main Street", 10, "Warsaw", "00-001", "Poland");
+
+            Branch.LoadExtent(null);
+            Room.LoadExtent(null);
         }
 
         // --------------------------------------------------------------
@@ -112,7 +115,7 @@ namespace SpaCenterTest
 
             Assert.That(ex!.Message, Is.EqualTo("At least one phone number is required"));
         }
-        
+
         [Test]
         public void Branches_Extent_Is_ReadOnly()
         {
@@ -130,7 +133,7 @@ namespace SpaCenterTest
                 ((IList<Branch>)extent).Add(branch);
             });
         }
-        
+
         [Test]
         public void Modifying_Property_Updates_Extent_Object()
         {
@@ -138,14 +141,17 @@ namespace SpaCenterTest
 
             var address = new Address("Main", 1, "City", "11-111", "Country");
             var branch = new Branch("Old Name", address, new List<string> { "+48123456789" });
-            
-            
+
             branch.Name = "New Name";
-            
+
             var first = Branch.Branches[0];
             Assert.That(first.Name, Is.EqualTo("New Name"));
         }
-        //Qualified Association Tests
+
+        // --------------------------------------------------------------
+        // Qualified association tests: Branch <-> Employee
+        // --------------------------------------------------------------
+
         [Test]
         public void AddEmployee_CreatesQualifiedAssociation_AndReverseConnection()
         {
@@ -162,15 +168,11 @@ namespace SpaCenterTest
 
             branch.AddEmployee(employee);
 
-            
             Assert.That(branch.EmployeesByPesel.ContainsKey(employee.Pesel), Is.True);
             Assert.That(branch.EmployeesByPesel[employee.Pesel], Is.EqualTo(employee));
-
-            
             Assert.That(employee.Branches, Contains.Item(branch));
         }
 
-        
         [Test]
         public void RemoveEmployee_RemovesFromBothSides_WhenMoreThanOneEmployee()
         {
@@ -192,17 +194,12 @@ namespace SpaCenterTest
 
             branch.RemoveEmployee(emp1.Pesel);
 
-            
             Assert.That(branch.EmployeesByPesel.ContainsKey(emp1.Pesel), Is.False);
-            
             Assert.That(emp1.Branches, Does.Not.Contain(branch));
-
-            
             Assert.That(branch.EmployeesByPesel.ContainsKey(emp2.Pesel), Is.True);
             Assert.That(emp2.Branches, Contains.Item(branch));
         }
 
-        
         [Test]
         public void RemoveEmployee_Throws_WhenRemovingLastEmployeeFromBranch()
         {
@@ -224,7 +221,6 @@ namespace SpaCenterTest
             Assert.That(ex!.Message, Is.EqualTo("Branch must have at least one employee"));
         }
 
-        
         [Test]
         public void UpdateEmployeePesel_ChangesDictionaryKey_AndKeepsReverse()
         {
@@ -245,15 +241,11 @@ namespace SpaCenterTest
 
             branch.UpdateEmployeePesel(oldPesel, newPesel);
 
-            
             Assert.That(branch.GetEmployeeByPesel(oldPesel), Is.Null);
-            
             Assert.That(branch.GetEmployeeByPesel(newPesel), Is.EqualTo(emp));
-           
             Assert.That(emp.Pesel, Is.EqualTo(newPesel));
         }
 
-        
         [Test]
         public void AddEmployee_Throws_WhenPeselAlreadyUsedInBranch()
         {
@@ -280,7 +272,6 @@ namespace SpaCenterTest
             Assert.That(ex!.Message, Is.EqualTo("Employee with same PESEL already assigned to this branch"));
         }
 
-       
         [Test]
         public void AddEmployee_Throws_WhenEmployeeAlreadyAssignedToAnotherBranch()
         {
@@ -301,6 +292,83 @@ namespace SpaCenterTest
                 branch2.AddEmployee(emp));
 
             Assert.That(ex!.Message, Is.EqualTo("Employee already assigned to a different branch"));
+        }
+
+        // --------------------------------------------------------------
+        // Branch <-> Room association & composition tests
+        // --------------------------------------------------------------
+
+        [Test]
+        public void RemoveRoom_RemovesAssociation_AndDeletesRoomFromExtent()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            var room = new Room(101, "Massage", 22.0, 50.0, branch);
+
+            branch.RemoveRoom(room);
+
+            Assert.That(branch.Rooms, Does.Not.Contain(room));
+
+            Assert.That(Room.Rooms, Does.Not.Contain(room));
+
+            Assert.That(room.Branch, Is.Null);
+        }
+
+        [Test]
+        public void DeleteBranch_DeletesAllItsRoomsFromExtent()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            var room1 = new Room(101, "Massage", 22.0, 50.0, branch);
+            var room2 = new Room(102, "Sauna", 25.0, 40.0, branch);
+
+            branch.DeleteBranch();
+
+            Assert.That(Branch.Branches, Does.Not.Contain(branch));
+
+            Assert.That(Room.Rooms, Is.Empty);
+
+            Assert.That(branch.Rooms, Is.Empty);
+        }
+
+        [Test]
+        public void AddRoom_Null_ThrowsArgumentNullException()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+
+            Assert.Throws<ArgumentNullException>(() => branch.AddRoom(null!));
+        }
+        
+         [Test]
+        public void AddRoom_WhenRoomAlreadyAssignedToSameBranch_DoesNotDuplicate()
+        {
+            var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            var room = new Room(101, "Massage", 22.0, 50.0, branch);
+
+            var roomsBefore = new List<Room>(branch.Rooms);
+
+            branch.AddRoom(room);
+
+            var roomsAfter = new List<Room>(branch.Rooms);
+
+            Assert.That(roomsAfter.Count, Is.EqualTo(roomsBefore.Count));
+            Assert.That(roomsAfter, Is.EquivalentTo(roomsBefore));
+
+            Assert.That(room.Branch, Is.SameAs(branch));
+        }
+
+        [Test]
+        public void AddRoom_WhenRoomAlreadyAssignedToAnotherBranch_ThrowsAndKeepsOriginalAssociation()
+        {
+            var branch1 = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            var branch2 = new Branch("SPA Krakow", _address, new List<string> { "+48123456780" });
+
+            var room = new Room(101, "Massage", 22.0, 50.0, branch1);
+
+            var ex = Assert.Throws<InvalidOperationException>(() => branch2.AddRoom(room));
+            Assert.That(ex!.Message, Does.Contain("Room already belongs to a different branch"));
+
+            Assert.That(room.Branch, Is.SameAs(branch1));
+            Assert.That(branch1.Rooms, Does.Contain(room));
+            Assert.That(branch2.Rooms, Does.Not.Contain(room));
         }
     }
 }
