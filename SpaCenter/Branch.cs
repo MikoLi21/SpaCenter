@@ -9,6 +9,9 @@ public class Branch
     //Branch Container
     private static List<Branch> branches_List = new List<Branch>();
     public static IReadOnlyList<Branch> Branches => branches_List.AsReadOnly();
+
+    private HashSet<Room> _rooms = new HashSet<Room>();
+    public IEnumerable<Room> Rooms => _rooms.ToHashSet();
     
     private string _name;
     public string Name
@@ -163,5 +166,39 @@ public class Branch
         if (list == null) return;
 
         branches_List.AddRange(list);
+    }
+
+    public void AddRoom(Room room)
+    {
+        if (room == null)
+            throw new ArgumentNullException(nameof(room));
+
+        if (room.Branch != null && room.Branch != this)
+            throw new InvalidOperationException("Room already belongs to a different branch");
+
+        if (_rooms.Add(room))
+        {
+            room.SetBranchReverse(this);
+        }
+    }
+
+    public void RemoveRoom(Room room)
+    {
+        if(room == null) return;
+        if (_rooms.Remove(room))
+        {
+            room.RemoveBranchReverse();
+            Room.DeleteRoom(room);
+        }
+    }
+    
+    public void DeleteBranch()
+    {
+        foreach (var room in _rooms.ToList())
+        {
+            RemoveRoom(room);
+        }
+
+        branches_List.Remove(this);
     }
 }

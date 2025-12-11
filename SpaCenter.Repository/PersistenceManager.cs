@@ -17,7 +17,8 @@ public static class PersistenceManager
                 Employees = Employee.Employees.ToList(),
                 Services = Service.Services.ToList(),
                 Bookings = Booking.Bookings.ToList(),
-                Branches = Branch.Branches.ToList()
+                Branches = Branch.Branches.ToList(),
+                Rooms = Room.Rooms.ToList()
             };
 
             var json = JsonSerializer.Serialize(
@@ -50,6 +51,7 @@ public static class PersistenceManager
             Service.LoadExtent(allData.Services);
             Booking.LoadExtent(allData.Bookings);
             Branch.LoadExtent(allData.Branches);
+            Room.LoadExtent(allData.Rooms);
         }
     }
 
@@ -60,5 +62,6 @@ public static class PersistenceManager
         public List<Service>? Services { get; set; }
         public List<Booking>? Bookings { get; set; }
         public List<Branch>? Branches { get; set; }
+        public List<Room>? Rooms { get; set; }
     }
 }
