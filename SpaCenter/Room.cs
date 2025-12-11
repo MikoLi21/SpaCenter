@@ -9,7 +9,9 @@ public class Room
 {
     private static List<Room> rooms_List = new List<Room>();
     public static IReadOnlyList<Room> Rooms => rooms_List.AsReadOnly();
-    
+
+    public Branch Branch { get; private set; }
+
     private int _roomNumber;
     public int RoomNumber
     {
@@ -63,13 +65,16 @@ public class Room
     }
 
     [JsonConstructor]
-    public Room(int roomNumber, string type, double temperature, double humidityLevel)
+    public Room(int roomNumber, string type, double temperature, double humidityLevel, Branch branch)
     {
         RoomNumber = roomNumber;
         Type = type;
         Temperature = temperature;
         HumidityLevel = humidityLevel;
-
+        
+        if(branch == null)
+            throw new ArgumentNullException("Room must belong to a branch");
+        branch.AddRoom(this); //branch.AddRoom(this) also sets reverse connection so no need for extra Branch = branch
         addRoom(this);
     }
     
@@ -88,5 +93,20 @@ public class Room
         if (list == null) return;
 
         rooms_List.AddRange(list);
+    }
+
+    internal void SetBranchReverse(Branch branch)
+    {
+        Branch = branch;
+    }
+
+    internal void RemoveBranchReverse()
+    {
+        Branch = null;
+    }
+
+    internal static void DeleteRoom(Room room)
+    {
+        rooms_List.Remove(room);
     }
 }

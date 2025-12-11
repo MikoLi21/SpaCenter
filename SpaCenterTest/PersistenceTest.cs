@@ -45,7 +45,7 @@ public class PersistenceTest
             new Address("ul.Koszykowa", 80, "Warsaw", "04-565", "Poland"),
             phones);
 
-        var r1 = new Room(101, "Massage Room", 23.5, 55.0);
+        var r1 = new Room(101, "Massage Room", 23.5, 55.0, b1);
 
         // Save everything
         PersistenceManager.Save();
