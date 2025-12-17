@@ -5,6 +5,15 @@ using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace SpaCenter;
+[Flags]
+public enum EmployeeRole
+{
+    None = 0,
+    Receptionist = 1 << 0,
+    Therapist = 1 << 1,
+    SaunaSupervisor = 1 << 2,
+    NailTechnician = 1 << 3
+}
 
 [Serializable]
 public class Employee : Person
@@ -20,7 +29,36 @@ public class Employee : Person
     private DateTime _hireDate;
     private DateTime? _leaveDate;
     private decimal _yearsOfExperience;
+    //start overlapping
+    public EmployeeRole Roles { get; private set; }
+    private string? _firstAidCertification;
+    public string? FirstAidCertification
+    {
+        get => _firstAidCertification;
+        private set
+        {
+            _firstAidCertification = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+    }
 
+    private string? _certificationLevel;
+    public string? CertificationLevel
+    {
+        get => _certificationLevel;
+        private set
+        {
+            _certificationLevel = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+    }
+
+    // Receptionist
+    private readonly HashSet<string> _languages = new();
+    public IReadOnlyCollection<string> Languages => _languages;
+
+    // Therapist
+    private readonly HashSet<string> _certifications = new();
+    public IReadOnlyCollection<string> Certifications => _certifications;
+    //finish overlapping
     public void AddServiceToEmployee(Service service)
     {
         if (service == null)
@@ -139,26 +177,94 @@ public class Employee : Person
         _branches.Remove(branch);
     }
     
+    // public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
+    //     decimal yearsOfExperience, IEnumerable<Service> services,EmployeeRole roles,IEnumerable<string>? languages = null,
+    //     IEnumerable<string>? certifications = null,
+    //     string? firstAidCertification = null,
+    //     string? certificationLevel = null)
+    //     : base(name, surname, email, phoneNumber)
+    // {
+    //     Pesel = pesel;
+    //     HireDate = hireDate;
+    //     YearsOfExperience = yearsOfExperience;
+    //     
+    //     if (services == null || !services.Any())
+    //         throw new ArgumentException("An employee must provide at least one service");
+    //
+    //     foreach (var service in services)
+    //         AddServiceToEmployee(service);
+    //     //start overlapping
+    //     Roles = roles;
+    //     // Languages (Receptionist)
+    //     _languages.Clear();
+    //     if (languages != null)
+    //     {
+    //         foreach (var l in languages)
+    //         {
+    //             if (string.IsNullOrWhiteSpace(l))
+    //                 throw new ArgumentException("Language can't be empty");
+    //             _languages.Add(l.Trim());
+    //         }
+    //     }
+    //
+    //     // Certifications (Therapist)
+    //     _certifications.Clear();
+    //     if (certifications != null)
+    //     {
+    //         foreach (var c in certifications)
+    //         {
+    //             if (string.IsNullOrWhiteSpace(c))
+    //                 throw new ArgumentException("Certification can't be empty");
+    //             _certifications.Add(c.Trim());
+    //         }
+    //     }
+    //
+    //     // These go through "set" validation
+    //     FirstAidCertification = firstAidCertification;
+    //     CertificationLevel = certificationLevel;
+    //     if (Roles == EmployeeRole.None)
+    //         throw new ArgumentException("Employee must have at least one role");
+    //
+    //     // If role NOT present -> related data must be empty/null
+    //     if (!Roles.HasFlag(EmployeeRole.Receptionist) && _languages.Count > 0)
+    //         throw new ArgumentException("Languages allowed only for Receptionist role");
+    //
+    //     if (!Roles.HasFlag(EmployeeRole.Therapist) && _certifications.Count > 0)
+    //         throw new ArgumentException("Certifications allowed only for Therapist role");
+    //
+    //     if (!Roles.HasFlag(EmployeeRole.SaunaSupervisor) && FirstAidCertification != null)
+    //         throw new ArgumentException("FirstAidCertification allowed only for SaunaSupervisor role");
+    //
+    //     if (!Roles.HasFlag(EmployeeRole.NailTechnician) && CertificationLevel != null)
+    //         throw new ArgumentException("CertificationLevel allowed only for NailTechnician role");
+    //
+    //     // If role present -> minimal data required
+    //     if (Roles.HasFlag(EmployeeRole.Receptionist) && _languages.Count == 0)
+    //         throw new ArgumentException("Receptionist must have at least one language");
+    //
+    //     if (Roles.HasFlag(EmployeeRole.Therapist) && _certifications.Count == 0)
+    //         throw new ArgumentException("Therapist must have at least one certification");
+    //
+    //     if (Roles.HasFlag(EmployeeRole.SaunaSupervisor) && FirstAidCertification == null)
+    //         throw new ArgumentException("SaunaSupervisor must have first aid certification");
+    //
+    //     if (Roles.HasFlag(EmployeeRole.NailTechnician) && CertificationLevel == null)
+    //         throw new ArgumentException("NailTechnician must have certification level");
+    //     //finish overlapping
+    //     addEmployee(this);
+    // }
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
         decimal yearsOfExperience, IEnumerable<Service> services)
-        : base(name, surname, email, phoneNumber)
+        : this(name, surname, email, phoneNumber, pesel, hireDate, yearsOfExperience, services,
+            roles: EmployeeRole.None)
     {
-        Pesel = pesel;
-        HireDate = hireDate;
-        YearsOfExperience = yearsOfExperience;
-        
-        if (services == null || !services.Any())
-            throw new ArgumentException("An employee must provide at least one service");
-
-        foreach (var service in services)
-            AddServiceToEmployee(service);
-        
-        addEmployee(this);
     }
-
     [JsonConstructor]
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        decimal yearsOfExperience, IEnumerable<Service> services, DateTime? leaveDate = null)
+        decimal yearsOfExperience, IEnumerable<Service> services,EmployeeRole roles,IEnumerable<string>? languages = null,
+        IEnumerable<string>? certifications = null,
+        string? firstAidCertification = null,
+        string? certificationLevel = null, DateTime? leaveDate = null)
         : base(name, surname, email, phoneNumber)
     {
         Pesel = pesel;
@@ -171,6 +277,65 @@ public class Employee : Person
 
         foreach (var service in services)
             AddServiceToEmployee(service);
+        //start overlapping
+        Roles = roles;
+
+        // Languages (Receptionist)
+        _languages.Clear();
+        if (languages != null)
+        {
+            foreach (var l in languages)
+            {
+                if (string.IsNullOrWhiteSpace(l))
+                    throw new ArgumentException("Language can't be empty");
+                _languages.Add(l.Trim());
+            }
+        }
+
+        // Certifications (Therapist)
+        _certifications.Clear();
+        if (certifications != null)
+        {
+            foreach (var c in certifications)
+            {
+                if (string.IsNullOrWhiteSpace(c))
+                    throw new ArgumentException("Certification can't be empty");
+                _certifications.Add(c.Trim());
+            }
+        }
+
+        // These go through "set" validation
+        FirstAidCertification = firstAidCertification;
+        CertificationLevel = certificationLevel;
+        if (Roles == EmployeeRole.None)
+            throw new ArgumentException("Employee must have at least one role");
+
+        // If role NOT present -> related data must be empty/null
+        if (!Roles.HasFlag(EmployeeRole.Receptionist) && _languages.Count > 0)
+            throw new ArgumentException("Languages allowed only for Receptionist role");
+
+        if (!Roles.HasFlag(EmployeeRole.Therapist) && _certifications.Count > 0)
+            throw new ArgumentException("Certifications allowed only for Therapist role");
+
+        if (!Roles.HasFlag(EmployeeRole.SaunaSupervisor) && FirstAidCertification != null)
+            throw new ArgumentException("FirstAidCertification allowed only for SaunaSupervisor role");
+
+        if (!Roles.HasFlag(EmployeeRole.NailTechnician) && CertificationLevel != null)
+            throw new ArgumentException("CertificationLevel allowed only for NailTechnician role");
+
+        // If role present -> minimal data required
+        if (Roles.HasFlag(EmployeeRole.Receptionist) && _languages.Count == 0)
+            throw new ArgumentException("Receptionist must have at least one language");
+
+        if (Roles.HasFlag(EmployeeRole.Therapist) && _certifications.Count == 0)
+            throw new ArgumentException("Therapist must have at least one certification");
+
+        if (Roles.HasFlag(EmployeeRole.SaunaSupervisor) && FirstAidCertification == null)
+            throw new ArgumentException("SaunaSupervisor must have first aid certification");
+
+        if (Roles.HasFlag(EmployeeRole.NailTechnician) && CertificationLevel == null)
+            throw new ArgumentException("NailTechnician must have certification level");
+        //finish overlaping
         addEmployee(this);
     }
 
