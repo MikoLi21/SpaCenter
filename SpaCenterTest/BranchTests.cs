@@ -164,8 +164,10 @@ namespace SpaCenterTest
 
             var employee = new Employee(
                 "Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4, services);
-
+                12345678901, DateTime.Today.AddYears(-1), 4m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" }
+            );
             branch.AddEmployee(employee);
 
             Assert.That(branch.EmployeesByPesel.ContainsKey(employee.Pesel), Is.True);
@@ -184,11 +186,14 @@ namespace SpaCenterTest
             };
 
             var emp1 = new Employee("E1", "A", "e1@example.com", "111111111",
-                11111111111, DateTime.Today.AddYears(-2), 3, services);
+                11111111111, DateTime.Today.AddYears(-2), 3m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" });
 
             var emp2 = new Employee("E2", "B", "e2@example.com", "222222222",
-                22222222222, DateTime.Today.AddYears(-3), 5, services);
-
+                22222222222, DateTime.Today.AddYears(-3), 5m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" });
             branch.AddEmployee(emp1);
             branch.AddEmployee(emp2);
 
@@ -210,9 +215,12 @@ namespace SpaCenterTest
                 new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
             };
 
-            var emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4, services);
-
+            var emp = new Employee(
+                "Eva", "Kowalska", "eva@example.com", "999888777",
+                12345678901, DateTime.Today.AddYears(-1), 4m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" }
+            );
             branch.AddEmployee(emp);
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
@@ -234,9 +242,12 @@ namespace SpaCenterTest
             long oldPesel = 12345678901;
             long newPesel = 98765432109;
 
-            var emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777",
-                oldPesel, DateTime.Today.AddYears(-1), 4, services);
-
+            var emp = new Employee(
+                "Eva", "Kowalska", "eva@example.com", "999888777",
+                12345678901, DateTime.Today.AddYears(-1), 4m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" }
+            );
             branch.AddEmployee(emp);
 
             branch.UpdateEmployeePesel(oldPesel, newPesel);
@@ -259,11 +270,14 @@ namespace SpaCenterTest
             long pesel = 12345678901;
 
             var emp1 = new Employee("E1", "A", "e1@example.com", "111111111",
-                pesel, DateTime.Today.AddYears(-2), 3, services);
+                11111111111, DateTime.Today.AddYears(-2), 3m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" });
 
             var emp2 = new Employee("E2", "B", "e2@example.com", "222222222",
-                pesel, DateTime.Today.AddYears(-3), 5, services);
-
+                22222222222, DateTime.Today.AddYears(-3), 5m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" });
             branch.AddEmployee(emp1);
 
             var ex = Assert.Throws<ArgumentException>(() =>
@@ -283,9 +297,12 @@ namespace SpaCenterTest
                 new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
             };
 
-            var emp = new Employee("Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4, services);
-
+            var emp = new Employee(
+                "Eva", "Kowalska", "eva@example.com", "999888777",
+                12345678901, DateTime.Today.AddYears(-1), 4m, services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" }
+            );
             branch1.AddEmployee(emp);
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
