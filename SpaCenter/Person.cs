@@ -98,15 +98,24 @@ public abstract class Person
     }
 
     public void AssignToEmployee(long pesel, DateTime hireDate,
-        decimal yearsOfExperience, IEnumerable<Service> services)
+        decimal yearsOfExperience, IEnumerable<Service> services,EmployeeRole roles,IEnumerable<string>? languages = null,
+        IEnumerable<string>? certifications = null,
+        string? firstAidCertification = null,
+        string? certificationLevel = null, DateTime? leaveDate = null)
     {
-        Empl = new Employee(pesel, hireDate, yearsOfExperience, services);
-    }
-    
-    public void AssignToEmployee(long pesel, DateTime hireDate,
-        decimal yearsOfExperience, IEnumerable<Service> services, DateTime? leaveDate = null)
-    {
-        Empl = new Employee(pesel, hireDate, yearsOfExperience, services, leaveDate);
+        Empl = new Employee(
+            person: this,
+            pesel: pesel,
+            hireDate: hireDate,
+            yearsOfExperience: yearsOfExperience,
+            services: services,
+            roles: roles,
+            languages: languages,
+            certifications: certifications,
+            firstAidCertification: firstAidCertification,
+            certificationLevel: certificationLevel,
+            leaveDate: leaveDate
+        );
     }
     // Overlapping finished (PERSON -> CUSTOMER,EMPLOYEE)
 }
