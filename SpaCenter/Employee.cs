@@ -253,12 +253,7 @@ public class Employee : Person
     //     //finish overlapping
     //     addEmployee(this);
     // }
-    public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
-        decimal yearsOfExperience, IEnumerable<Service> services)
-        : this(name, surname, email, phoneNumber, pesel, hireDate, yearsOfExperience, services,
-            roles: EmployeeRole.None)
-    {
-    }
+   
     [JsonConstructor]
     public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
         decimal yearsOfExperience, IEnumerable<Service> services,EmployeeRole roles,IEnumerable<string>? languages = null,

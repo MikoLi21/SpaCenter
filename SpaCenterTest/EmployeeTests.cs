@@ -29,6 +29,9 @@ namespace SpaCenterTest
         [SetUp]
         public void Setup()
         {
+            // IMPORTANT: clear extent before every test (static list)
+            Employee.LoadExtent(new List<Employee>());
+
             _name = "Eva";
             _surname = "Kowalska";
             _email = "eva@example.com";
@@ -237,22 +240,25 @@ namespace SpaCenterTest
         [Test]
         public void Changing_Property_Should_Update_Employee_In_Extent()
         {
-            
+          
             Employee.LoadExtent(new List<Employee>());
 
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5,
+                12345678901, DateTime.Today.AddYears(-1), 5m,
                 services: _services,
                 roles: EmployeeRole.SaunaSupervisor,
                 firstAidCertification: _firstAid);
 
             
-            emp.YearsOfExperience = 10;
+            emp.YearsOfExperience = 10m;
+
+           
+            Assert.That(emp.YearsOfExperience, Is.EqualTo(10m));
 
             
             var stored = Employee.Employees.Single(e => ReferenceEquals(e, emp));
-            Assert.That(stored.YearsOfExperience, Is.EqualTo(10));
+            Assert.That(stored.YearsOfExperience, Is.EqualTo(10m));
         }
 
         private Customer CreateCustomer(string name = "Test")
@@ -293,12 +299,11 @@ namespace SpaCenterTest
                 certifications: _therapistCertifications);
 
             var tempEmp = new Employee("Temp", "E", "temp@example.com", "999999999",
-                55555555555, DateTime.Today.AddYears(-2), 2, _services,
+                55555555555, DateTime.Today.AddYears(-2), 2m, _services,
                 roles: EmployeeRole.NailTechnician,
                 certificationLevel: _nailLevel);
 
             var booking = CreateBooking(tempEmp, DateTime.Today.AddDays(1));
-
             booking.RemoveEmployee();
 
             emp1.AddBookingEmployeeAssignedTo(booking);
@@ -341,7 +346,7 @@ namespace SpaCenterTest
         public void EmployeeConstructor_ShouldRequireAtLeastOneService()
         {
             Assert.Throws<ArgumentException>(() => new Employee("John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, Enumerable.Empty<Service>(),
+                12345678901, DateTime.Today.AddYears(-1), 5m, Enumerable.Empty<Service>(),
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages));
         }
@@ -351,7 +356,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Therapist,
                 certifications: _therapistCertifications);
 
@@ -364,7 +369,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.SaunaSupervisor,
                 firstAidCertification: _firstAid);
 
@@ -381,7 +386,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
 
@@ -398,7 +403,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.NailTechnician,
                 certificationLevel: _nailLevel);
 
@@ -416,7 +421,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
                 languages: _receptionistLanguages,
                 certifications: _therapistCertifications);
@@ -435,7 +440,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.SaunaSupervisor,
                 firstAidCertification: _firstAid);
 
@@ -453,7 +458,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Therapist,
                 certifications: _therapistCertifications);
 
@@ -473,7 +478,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
 
@@ -487,7 +492,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
                 languages: _receptionistLanguages,
                 certifications: _therapistCertifications);
@@ -502,6 +507,7 @@ namespace SpaCenterTest
             Assert.That(_s1.ProvidedBy, Contains.Item(emp));
             Assert.That(s2.ProvidedBy, Contains.Item(emp));
         }
+
         // ===================== Overlapping / Roles (Flags) tests =====================
 
         [Test]
@@ -512,7 +518,7 @@ namespace SpaCenterTest
 
             var emp = new Employee(
                 "Jane", "Doe", "jane@x.com", "123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
                 languages: languages,
                 certifications: certs
@@ -531,7 +537,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Receptionist,
                     languages: null
                 ));
@@ -545,7 +551,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Therapist,
                     certifications: null
                 ));
@@ -559,7 +565,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.SaunaSupervisor,
                     firstAidCertification: null
                 ));
@@ -573,7 +579,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.NailTechnician,
                     certificationLevel: null
                 ));
@@ -587,7 +593,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Therapist,
                     languages: new List<string> { "English" },
                     certifications: new List<string> { "Massage certificate" }
@@ -602,7 +608,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Receptionist,
                     languages: new List<string> { "English" },
                     certifications: new List<string> { "Massage certificate" }
@@ -617,7 +623,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Receptionist,
                     languages: new List<string> { "English" },
                     firstAidCertification: "First Aid Level 1"
@@ -632,7 +638,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Therapist,
                     certifications: new List<string> { "Massage certificate" },
                     certificationLevel: "Level A"
@@ -646,12 +652,11 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "Jane", "Doe", "jane@x.com", "123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Receptionist,
                 languages: new List<string> { " English ", "English", "Polish" }
             );
 
-            // HashSet => unique, plus Trim() in constructor
             Assert.That(emp.Languages.Count, Is.EqualTo(2));
             Assert.That(emp.Languages, Does.Contain("English"));
             Assert.That(emp.Languages, Does.Contain("Polish"));
@@ -662,7 +667,7 @@ namespace SpaCenterTest
         {
             var emp = new Employee(
                 "Jane", "Doe", "jane@x.com", "123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                 roles: EmployeeRole.Therapist,
                 certifications: new List<string> { " Cert1 ", "Cert1", "Cert2" }
             );
@@ -678,7 +683,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Receptionist,
                     languages: new List<string> { "English", "   " }
                 ));
@@ -692,7 +697,7 @@ namespace SpaCenterTest
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Employee(
                     "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5, _services,
+                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
                     roles: EmployeeRole.Therapist,
                     certifications: new List<string> { "Massage certificate", "" }
                 ));
