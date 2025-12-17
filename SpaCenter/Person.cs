@@ -15,7 +15,11 @@ public abstract class Person
     private string _surname;
     private string _email;
     private string _phoneNumber;
-
+    
+    // Overlapping roles (composition) (PERSON -> CUSTOMER,EMPLOYEE)
+    public IEmployee? Empl { get; private set; }
+    public ICustomer? Cstmr { get; private set; }
+    // Overlapping roles finished (PERSON -> CUSTOMER,EMPLOYEE)
     public string Name
     {
         get => _name;
@@ -85,4 +89,33 @@ public abstract class Person
             Email = email;
             PhoneNumber = phoneNumber;
     }
+    
+    
+    // Overlapping constructors (PERSON -> CUSTOMER,EMPLOYEE)
+    public void AssignToCustomer(DateTime dateOfBirth)
+    {
+        Cstmr = new Customer(this, dateOfBirth);
+    }
+
+    public void AssignToEmployee(long pesel, DateTime hireDate,
+        decimal yearsOfExperience, IEnumerable<Service> services,EmployeeRole roles,IEnumerable<string>? languages = null,
+        IEnumerable<string>? certifications = null,
+        string? firstAidCertification = null,
+        string? certificationLevel = null, DateTime? leaveDate = null)
+    {
+        Empl = new Employee(
+            person: this,
+            pesel: pesel,
+            hireDate: hireDate,
+            yearsOfExperience: yearsOfExperience,
+            services: services,
+            roles: roles,
+            languages: languages,
+            certifications: certifications,
+            firstAidCertification: firstAidCertification,
+            certificationLevel: certificationLevel,
+            leaveDate: leaveDate
+        );
+    }
+    // Overlapping finished (PERSON -> CUSTOMER,EMPLOYEE)
 }

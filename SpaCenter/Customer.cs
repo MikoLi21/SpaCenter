@@ -3,7 +3,7 @@ using System;
 namespace SpaCenter;
 
 [Serializable]
-public class Customer : Person
+public class Customer : ICustomer
 {
     //Customer Container
     private static List<Customer> customers_List = new List<Customer>();
@@ -25,13 +25,16 @@ public class Customer : Person
     
     private HashSet<Booking> _listOfBookings = new HashSet<Booking>();
     public IEnumerable<Booking> ListOfBookings => _listOfBookings.ToHashSet();
-    public Customer(string name, string surname, string email, string phoneNumber, DateTime dateOfBirth)
-        : base(name, surname, email, phoneNumber)
+    
+    //Overlapping starts (Person -> Customer)
+    public Person Prsn{ get; }
+    internal Customer(Person person, DateTime dateOfBirth)
     {
+        Prsn = person ?? throw new ArgumentNullException(nameof(person));
         DateOfBirth = dateOfBirth;
-        
         addCustomer(this);
     }
+    //Overlapping ends (Person -> Customer)
     
     private static void addCustomer(Customer customer)
     {

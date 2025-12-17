@@ -16,7 +16,7 @@ public enum EmployeeRole
 }
 
 [Serializable]
-public class Employee : Person
+public class Employee : IEmployee
 {
     //Employee Container
     private static List<Employee> employees_List = new List<Employee>();
@@ -253,15 +253,19 @@ public class Employee : Person
     //     //finish overlapping
     //     addEmployee(this);
     // }
+    
+    //Overlapping start (Person->Employee)
+    public Person Prsn{ get; }
    
     [JsonConstructor]
-    public Employee(string name, string surname, string email, string phoneNumber, long pesel, DateTime hireDate,
+    internal Employee(Person person, long pesel, DateTime hireDate,
         decimal yearsOfExperience, IEnumerable<Service> services,EmployeeRole roles,IEnumerable<string>? languages = null,
         IEnumerable<string>? certifications = null,
         string? firstAidCertification = null,
         string? certificationLevel = null, DateTime? leaveDate = null)
-        : base(name, surname, email, phoneNumber)
     {
+        Prsn = person ?? throw new ArgumentNullException(nameof(person));
+        //Overlapping ends Person -> Employee
         Pesel = pesel;
         HireDate = hireDate;
         LeaveDate = leaveDate;
