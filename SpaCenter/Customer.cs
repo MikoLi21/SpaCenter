@@ -101,10 +101,10 @@ public class Customer : ICustomer
         }
     }
     
-    public static Customer Register(string name, string surname, string email, string phoneNumber, DateTime dateOfBirth)
+    /*public static Customer Register(string name, string surname, string email, string phoneNumber, DateTime dateOfBirth)
     {
         return new Customer(name, surname, email, phoneNumber, dateOfBirth);
-    }
+    }*/
 
     public void Login()
     {

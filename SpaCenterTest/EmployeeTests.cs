@@ -50,90 +50,160 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_SetsNameCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
 
-            Assert.That(e.Name, Is.EqualTo(_name));
+            Assert.That(person.Name, Is.EqualTo(_name));
         }
 
         [Test]
         public void Constructor_SetsSurnameCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
-            Assert.That(e.Surname, Is.EqualTo(_surname));
+            Assert.That(person.Surname, Is.EqualTo(_surname));
         }
 
         [Test]
         public void Constructor_SetsEmailCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.SaunaSupervisor,
-                firstAidCertification: _firstAid);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
-            Assert.That(e.Email, Is.EqualTo(_email));
+            Assert.That(person.Email, Is.EqualTo(_email));
         }
 
         [Test]
         public void Constructor_SetsPhoneCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.NailTechnician,
-                certificationLevel: _nailLevel);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
-            Assert.That(e.PhoneNumber, Is.EqualTo(_phone));
+            Assert.That(person.PhoneNumber, Is.EqualTo(_phone));
         }
 
         [Test]
         public void Constructor_SetsPeselCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
-                languages: _receptionistLanguages,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
-            Assert.That(e.Pesel, Is.EqualTo(_pesel));
+            Assert.That(person.Empl.Pesel, Is.EqualTo(_pesel));
         }
 
         [Test]
         public void Constructor_SetsHireDateCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
 
-            Assert.That(e.HireDate, Is.EqualTo(_hireDate));
+            Assert.That(person.Empl.HireDate, Is.EqualTo(_hireDate));
         }
 
         [Test]
         public void Constructor_SetsYearsOfExperienceCorrectly()
         {
-            var e = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
-            Assert.That(e.YearsOfExperience, Is.EqualTo(_years));
+            Assert.That(person.Empl.YearsOfExperience, Is.EqualTo(_years));
         }
 
         [Test]
         public void InvalidPesel()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    name: "Anna",
-                    surname: "Smith",
-                    email: "anna@example.com",
-                    phoneNumber: "123456789",
+                person.AssignToEmployee(
                     pesel: 1234,
-                    hireDate: _validHireDate,
-                    yearsOfExperience: 5,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
                     services: _services,
                     roles: EmployeeRole.Receptionist,
-                    languages: _receptionistLanguages
-                ));
+                    languages: _receptionistLanguages));
 
             Assert.That(ex.Message, Is.EqualTo("Invalid pesel number"));
         }
@@ -143,19 +213,20 @@ namespace SpaCenterTest
         {
             var futureHire = DateTime.Today.AddDays(1);
 
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    name: "Anna",
-                    surname: "Smith",
-                    email: "anna@example.com",
-                    phoneNumber: "123456789",
-                    pesel: 12345678901,
+                person.AssignToEmployee(
+                    pesel: _pesel,
                     hireDate: futureHire,
-                    yearsOfExperience: 5,
+                    yearsOfExperience: _years,
                     services: _services,
-                    roles: EmployeeRole.Therapist,
-                    certifications: _therapistCertifications
-                ));
+                    roles: EmployeeRole.Receptionist,
+                    languages: _receptionistLanguages));
 
             Assert.That(ex.Message, Is.EqualTo("Hire date can't be in the future"));
         }
@@ -163,18 +234,25 @@ namespace SpaCenterTest
         [Test]
         public void LeaveDateBeforeHireDate()
         {
-            var employee = new Employee(
-                "Anna", "Smith", "anna@example.com", "123456789",
-                12345678901, _validHireDate, 5, _services,
-                roles: EmployeeRole.SaunaSupervisor,
-                firstAidCertification: _firstAid
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
             );
-
-            var invalidLeave = _validHireDate.AddDays(-1);
+            
+            var invalidLeave = DateTime.Today.AddYears(-10);;
 
             var ex = Assert.Throws<ArgumentException>(() =>
             {
-                employee.LeaveDate = invalidLeave;
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    leaveDate: invalidLeave,
+                    yearsOfExperience: _years,
+                    services: _services,
+                    roles: EmployeeRole.Receptionist,
+                    languages: _receptionistLanguages);
             });
 
             Assert.That(ex.Message, Is.EqualTo("Leave date can't be before hire date"));
@@ -183,18 +261,25 @@ namespace SpaCenterTest
         [Test]
         public void LeaveDateInFuture()
         {
-            var employee = new Employee(
-                "Anna", "Smith", "anna@example.com", "123456789",
-                12345678901, _validHireDate, 5, _services,
-                roles: EmployeeRole.NailTechnician,
-                certificationLevel: _nailLevel
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
             );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
             var futureLeave = DateTime.Today.AddDays(1);
 
             var ex = Assert.Throws<ArgumentException>(() =>
             {
-                employee.LeaveDate = futureLeave;
+                person.Empl.LeaveDate = futureLeave;
             });
 
             Assert.That(ex.Message, Is.EqualTo("Leave date can't be in the future"));
@@ -203,15 +288,20 @@ namespace SpaCenterTest
         [Test]
         public void YearsOfExperienceOutOfRange()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Anna", "Smith", "anna@example.com", "123456789",
-                    12345678901, _validHireDate,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
                     yearsOfExperience: 50,
                     services: _services,
                     roles: EmployeeRole.Receptionist,
-                    languages: _receptionistLanguages
-                ));
+                    languages: _receptionistLanguages));
 
             Assert.That(ex.Message,
                 Is.EqualTo("Years of experience should be in the range of 0 to 40"));
@@ -220,20 +310,13 @@ namespace SpaCenterTest
         [Test]
         public void Employees_Extent_Should_Be_ReadOnly()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5,
-                services: _services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications);
-
             var extent = Employee.Employees;
 
             Assert.That(extent, Is.AssignableTo<IReadOnlyList<Employee>>());
 
             Assert.Throws<NotSupportedException>(() =>
             {
-                ((IList<Employee>)extent).Add(emp);
+                ((ICollection<Employee>)extent).Add((Employee)null!);
             });
         }
 
@@ -243,32 +326,44 @@ namespace SpaCenterTest
           
             Employee.LoadExtent(new List<Employee>());
 
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
                 services: _services,
-                roles: EmployeeRole.SaunaSupervisor,
-                firstAidCertification: _firstAid);
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
             
-            emp.YearsOfExperience = 10m;
+            person.Empl.YearsOfExperience = 10m;
 
            
-            Assert.That(emp.YearsOfExperience, Is.EqualTo(10m));
+            Assert.That(person.Empl.YearsOfExperience, Is.EqualTo(10m));
 
             
-            var stored = Employee.Employees.Single(e => ReferenceEquals(e, emp));
+            var stored = Employee.Employees.Single(e => ReferenceEquals(e, person.Empl));
             Assert.That(stored.YearsOfExperience, Is.EqualTo(10m));
         }
 
         private Customer CreateCustomer(string name = "Test")
         {
-            return new Customer(
-                name,
-                "Customer",
-                $"{name.ToLower()}@example.com",
-                "123456789",
-                new DateTime(1990, 1, 1));
+            var person = new SpaPerson(
+                name: name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+
+            person.AssignToCustomer(new DateTime(1998, 5, 20));
+
+            return person.Cstmr as Customer
+                   ?? throw new InvalidOperationException("Customer role was not assigned");
         }
 
         private Booking CreateBooking(Employee emp, DateTime date)
@@ -283,61 +378,113 @@ namespace SpaCenterTest
         [Test]
         public void AddBookingEmployeeAssignedTo_Throws_WhenBookingIsNull()
         {
-            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
 
-            var ex = Assert.Throws<ArgumentNullException>(() => emp.AddBookingEmployeeAssignedTo(null!));
+            var ex = Assert.Throws<ArgumentNullException>(() => person.Empl.AddBookingEmployeeAssignedTo(null!));
             Assert.That(ex!.ParamName, Is.EqualTo("booking"));
         }
 
         [Test]
         public void AddBookingEmployeeAssignedTo_AddsBooking_AndSetsReverseConnection()
         {
-            var emp1 = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var person1 = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person1.AssignToEmployee(
+                pesel: 67892345678,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
 
-            var tempEmp = new Employee("Temp", "E", "temp@example.com", "999999999",
-                55555555555, DateTime.Today.AddYears(-2), 2m, _services,
-                roles: EmployeeRole.NailTechnician,
-                certificationLevel: _nailLevel);
-
-            var booking = CreateBooking(tempEmp, DateTime.Today.AddDays(1));
+            var booking = CreateBooking((Employee)person1.Empl, DateTime.Today.AddDays(1));
             booking.RemoveEmployee();
 
-            emp1.AddBookingEmployeeAssignedTo(booking);
+            var employee = (Employee)person.Empl;
+            employee.AddBookingEmployeeAssignedTo(booking);
 
-            Assert.That(emp1.AssignedTo, Does.Contain(booking));
-            Assert.That(booking.Employee, Is.EqualTo(emp1));
+            Assert.That(employee.AssignedTo, Does.Contain(booking));
+            Assert.That(booking.Employee, Is.EqualTo(employee));
         }
 
         [Test]
         public void RemoveBookingEmployeeAssignedTo_Throws_WhenBookingIsNull()
         {
-            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
-                roles: EmployeeRole.SaunaSupervisor,
-                firstAidCertification: _firstAid);
-
-            var ex = Assert.Throws<ArgumentNullException>(() => emp.RemoveBookingEmployeeAssignedTo(null!));
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var employee = (Employee)person.Empl;
+            var ex = Assert.Throws<ArgumentNullException>(() => employee.RemoveBookingEmployeeAssignedTo(null!));
             Assert.That(ex!.ParamName, Is.EqualTo("booking"));
         }
 
         [Test]
         public void RemoveBookingEmployeeAssignedTo_RemovesBooking_AndReverseConnection()
         {
-            var emp = new Employee(_name, _surname, _email, _phone, _pesel, _hireDate, _years, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
+            var employee = (Employee)person.Empl;
 
-            var booking = CreateBooking(emp, DateTime.Today.AddDays(2));
+            var booking = CreateBooking(employee, DateTime.Today.AddDays(2));
 
-            Assert.That(emp.AssignedTo, Does.Contain(booking));
-            Assert.That(booking.Employee, Is.EqualTo(emp));
+            Assert.That(employee.AssignedTo, Does.Contain(booking));
+            Assert.That(booking.Employee, Is.EqualTo(employee));
 
-            emp.RemoveBookingEmployeeAssignedTo(booking);
+            employee.RemoveBookingEmployeeAssignedTo(booking);
 
-            Assert.That(emp.AssignedTo, Does.Not.Contain(booking));
+            Assert.That(employee.AssignedTo, Does.Not.Contain(booking));
             Assert.That(booking.Employee, Is.Null);
         }
 
@@ -345,8 +492,18 @@ namespace SpaCenterTest
         [Test]
         public void EmployeeConstructor_ShouldRequireAtLeastOneService()
         {
-            Assert.Throws<ArgumentException>(() => new Employee("John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, Enumerable.Empty<Service>(),
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            
+            Assert.Throws<ArgumentException>(() => person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: Enumerable.Empty<Service>(),
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages));
         }
@@ -354,95 +511,153 @@ namespace SpaCenterTest
         [Test]
         public void EmployeeConstructor_ShouldCreateReverseAssociations()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications);
-
-            Assert.That(emp.ProvidesServices, Contains.Item(_s1));
-            Assert.That(_s1.ProvidedBy, Contains.Item(emp));
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var employee = (Employee)person.Empl;
+            Assert.That(employee.ProvidesServices, Contains.Item(_s1));
+            Assert.That(_s1.ProvidedBy, Contains.Item(employee));
         }
 
         [Test]
         public void AddEmployeeServiceProvidedBy_ShouldCreateReverseAssociation()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.SaunaSupervisor,
-                firstAidCertification: _firstAid);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var employee = (Employee)person.Empl;
 
             var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
 
-            s2.AddEmployeeServiceProvidedBy(emp);
+            s2.AddEmployeeServiceProvidedBy(employee);
 
-            Assert.That(s2.ProvidedBy, Contains.Item(emp));
-            Assert.That(emp.ProvidesServices, Contains.Item(s2));
+            Assert.That(s2.ProvidedBy, Contains.Item(employee));
+            Assert.That(employee.ProvidesServices, Contains.Item(s2));
         }
 
         [Test]
         public void AddServiceToEmployee_ShouldCreateReverseAssociation()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
+            
+            var employee = (Employee)person.Empl;
 
             var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
 
-            emp.AddServiceToEmployee(s2);
+            employee.AddServiceToEmployee(s2);
 
-            Assert.That(emp.ProvidesServices, Contains.Item(s2));
-            Assert.That(s2.ProvidedBy, Contains.Item(emp));
+            Assert.That(employee.ProvidesServices, Contains.Item(s2));
+            Assert.That(s2.ProvidedBy, Contains.Item(employee));
         }
 
         [Test]
         public void AddEmployeeServiceProvidedBy_ShouldAvoidDuplicates()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.NailTechnician,
-                certificationLevel: _nailLevel);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var employee = (Employee)person.Empl;
 
             var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
 
-            s2.AddEmployeeServiceProvidedBy(emp);
-            s2.AddEmployeeServiceProvidedBy(emp);
+            s2.AddEmployeeServiceProvidedBy(employee);
+            s2.AddEmployeeServiceProvidedBy(employee);
 
             Assert.That(s2.ProvidedBy.Count, Is.EqualTo(1));
-            Assert.That(emp.ProvidesServices.Count, Is.EqualTo(2));
+            Assert.That(employee.ProvidesServices.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void RemoveEmployeeServiceProvidedBy_ShouldRemoveReverseAssociation()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
-                languages: _receptionistLanguages,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var employee = (Employee)person.Empl;
 
             var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
 
-            s2.AddEmployeeServiceProvidedBy(emp);
-            s2.RevomeEmployeeServiceProvidedBy(emp);
+            s2.AddEmployeeServiceProvidedBy(employee);
+            s2.RevomeEmployeeServiceProvidedBy(employee);
 
-            Assert.That(s2.ProvidedBy, Does.Not.Contain(emp));
-            Assert.That(emp.ProvidesServices, Does.Not.Contain(s2));
+            Assert.That(s2.ProvidedBy, Does.Not.Contain(employee));
+            Assert.That(employee.ProvidesServices, Does.Not.Contain(s2));
         }
 
         [Test]
         public void RemoveServiceFromEmployee_ShouldRemoveReverseAssociation()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.SaunaSupervisor,
-                firstAidCertification: _firstAid);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var emp = (Employee)person.Empl;
 
             var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
 
@@ -456,11 +671,21 @@ namespace SpaCenterTest
         [Test]
         public void RemoveServiceFromEmployee_ShouldThrow_WhenRemovingLastService()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var emp = (Employee)person.Empl;
 
             Assert.Throws<InvalidOperationException>(() => emp.RemoveServiceFromEmployee(_s1));
         }
@@ -476,11 +701,21 @@ namespace SpaCenterTest
         [Test]
         public void ReverseCreation_ShouldNotCauseInfiniteRecursion()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist,
                 languages: _receptionistLanguages);
+            
+            var emp = (Employee)person.Empl;
 
             _s1.AddEmployeeServiceProvidedBy(emp);
 
@@ -490,12 +725,21 @@ namespace SpaCenterTest
         [Test]
         public void ChainedAssociations_ShouldAllBeConsistent()
         {
-            var emp = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
-                languages: _receptionistLanguages,
-                certifications: _therapistCertifications);
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            var emp = (Employee)person.Empl;
 
             var s2 = new Service("Mask", "face mask", TimeSpan.FromMinutes(60), 200m, 16);
 
@@ -516,13 +760,22 @@ namespace SpaCenterTest
             var languages = new List<string> { "English", "Polish" };
             var certs = new List<string> { "Massage certificate" };
 
-            var emp = new Employee(
-                "Jane", "Doe", "jane@x.com", "123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
                 roles: EmployeeRole.Receptionist | EmployeeRole.Therapist,
                 languages: languages,
-                certifications: certs
-            );
+                certifications: certs);
+            
+            var emp = (Employee)person.Empl;
 
             Assert.That(emp.Roles.HasFlag(EmployeeRole.Receptionist), Is.True);
             Assert.That(emp.Roles.HasFlag(EmployeeRole.Therapist), Is.True);
@@ -534,13 +787,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_ReceptionistRoleButNoLanguages()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Receptionist,
-                    languages: null
-                ));
+                    languages: null));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("Receptionist must have at least one language"));
         }
@@ -548,13 +809,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_TherapistRoleButNoCertifications()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Therapist,
-                    certifications: null
-                ));
+                    certifications: null));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("Therapist must have at least one certification"));
         }
@@ -562,13 +831,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_SaunaSupervisorRoleButNoFirstAid()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.SaunaSupervisor,
-                    firstAidCertification: null
-                ));
+                    firstAidCertification: null));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("SaunaSupervisor must have first aid certification"));
         }
@@ -576,13 +853,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_NailTechnicianRoleButNoCertificationLevel()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.NailTechnician,
-                    certificationLevel: null
-                ));
+                    certificationLevel: null));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("NailTechnician must have certification level"));
         }
@@ -590,14 +875,23 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_LanguagesProvidedButNotReceptionist()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Therapist,
                     languages: new List<string> { "English" },
-                    certifications: new List<string> { "Massage certificate" }
-                ));
+                    certifications: new List<string> { "Massage certificate" }));
+            var emp = (Employee)person.Empl;
+
 
             Assert.That(ex!.Message, Is.EqualTo("Languages allowed only for Receptionist role"));
         }
@@ -605,14 +899,22 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_CertificationsProvidedButNotTherapist()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Receptionist,
                     languages: new List<string> { "English" },
-                    certifications: new List<string> { "Massage certificate" }
-                ));
+                    certifications: new List<string> { "Massage certificate" }));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("Certifications allowed only for Therapist role"));
         }
@@ -620,14 +922,22 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_FirstAidProvidedButNotSaunaSupervisor()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Receptionist,
                     languages: new List<string> { "English" },
-                    firstAidCertification: "First Aid Level 1"
-                ));
+                    firstAidCertification: "First Aid Level 1"));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("FirstAidCertification allowed only for SaunaSupervisor role"));
         }
@@ -635,14 +945,22 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_CertificationLevelProvidedButNotNailTechnician()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Therapist,
                     certifications: new List<string> { "Massage certificate" },
-                    certificationLevel: "Level A"
-                ));
+                    certificationLevel: "Level A"));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("CertificationLevel allowed only for NailTechnician role"));
         }
@@ -650,12 +968,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldStore_Languages_AsSet_NoDuplicates_AndTrim()
         {
-            var emp = new Employee(
-                "Jane", "Doe", "jane@x.com", "123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { " English ", "English", "Polish" }
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
             );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { " English ", "English", "Polish" });
+            
+            var emp = (Employee)person.Empl;
 
             Assert.That(emp.Languages.Count, Is.EqualTo(2));
             Assert.That(emp.Languages, Does.Contain("English"));
@@ -665,12 +992,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldStore_Certifications_AsSet_NoDuplicates_AndTrim()
         {
-            var emp = new Employee(
-                "Jane", "Doe", "jane@x.com", "123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5m, _services,
-                roles: EmployeeRole.Therapist,
-                certifications: new List<string> { " Cert1 ", "Cert1", "Cert2" }
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
             );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Therapist,
+                certifications: new List<string> { " Cert1 ", "Cert1", "Cert2" });
+            
+            var emp = (Employee)person.Empl;
 
             Assert.That(emp.Certifications.Count, Is.EqualTo(2));
             Assert.That(emp.Certifications, Does.Contain("Cert1"));
@@ -680,13 +1016,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_LanguageIsWhitespace()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Receptionist,
-                    languages: new List<string> { "English", "   " }
-                ));
+                    languages: new List<string> { "English", "   " }));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("Language can't be empty"));
         }
@@ -694,13 +1038,21 @@ namespace SpaCenterTest
         [Test]
         public void Constructor_ShouldThrow_When_CertificationIsWhitespace()
         {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Employee(
-                    "Jane", "Doe", "jane@x.com", "123456789",
-                    12345678901, DateTime.Today.AddYears(-1), 5m, _services,
+                person.AssignToEmployee(
+                    pesel: _pesel,
+                    hireDate: _hireDate,
+                    yearsOfExperience: _years,
+                    services: _services,
                     roles: EmployeeRole.Therapist,
-                    certifications: new List<string> { "Massage certificate", "" }
-                ));
+                    certifications: new List<string> { "Massage certificate", "" }));
+            var emp = (Employee)person.Empl;
 
             Assert.That(ex!.Message, Is.EqualTo("Certification can't be empty"));
         }

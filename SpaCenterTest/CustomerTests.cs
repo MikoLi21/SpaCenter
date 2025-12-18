@@ -14,6 +14,13 @@ namespace SpaCenterTest
         private string _email = null!;
         private string _phone = null!;
         private DateTime _dob;
+        
+        private SpaPerson _person1;
+        private Customer _cust = null!;
+        private SpaPerson _person2;
+        private Employee _emp = null!;
+        private Service _svc = null!;
+        private List<Service> _services = null!;
 
         private readonly List<string> _therapistCertifications = new() { "Massage certificate" };
 
@@ -30,41 +37,49 @@ namespace SpaCenterTest
             _email = "anna@example.com";
             _phone = "123456789";
             _dob = new DateTime(2000, 1, 1);
+            
+            _svc = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            _services = new List<Service> { _svc };
+            
+            _person1 = new SpaPerson(_name, _surname, _email, _phone);
+            _person1.AssignToCustomer(_dob);
+            _cust = (Customer)_person1.Cstmr;
+            
+            _person2 = new SpaPerson("Eva", "Kowalska", "eva@example.com", "999888777");
+            _person2.AssignToEmployee(12345678901, DateTime.Today.AddYears(-5), 4, _services,
+                roles: EmployeeRole.Therapist,
+                certifications: _therapistCertifications);
+            _emp = (Employee)_person2.Empl;
         }
 
         [Test]
         public void Constructor_SetsNameCorrectly()
         {
-            var c = new Customer(_name, _surname, _email, _phone, _dob);
-            Assert.That(c.Name, Is.EqualTo(_name));
+            Assert.That(_person1.Name, Is.EqualTo(_name));
         }
 
         [Test]
         public void Constructor_SetsSurnameCorrectly()
         {
-            var c = new Customer(_name, _surname, _email, _phone, _dob);
-            Assert.That(c.Surname, Is.EqualTo(_surname));
+            Assert.That(_person1.Surname, Is.EqualTo(_surname));
         }
 
         [Test]
         public void Constructor_SetsEmailCorrectly()
         {
-            var c = new Customer(_name, _surname, _email, _phone, _dob);
-            Assert.That(c.Email, Is.EqualTo(_email));
+            Assert.That(_person1.Email, Is.EqualTo(_email));
         }
 
         [Test]
         public void Constructor_SetsPhoneCorrectly()
         {
-            var c = new Customer(_name, _surname, _email, _phone, _dob);
-            Assert.That(c.PhoneNumber, Is.EqualTo(_phone));
+            Assert.That(_person1.PhoneNumber, Is.EqualTo(_phone));
         }
 
         [Test]
         public void Constructor_SetsDateOfBirthCorrectly()
         {
-            var c = new Customer(_name, _surname, _email, _phone, _dob);
-            Assert.That(c.DateOfBirth, Is.EqualTo(_dob));
+            Assert.That(_cust.DateOfBirth, Is.EqualTo(_dob));
         }
 
         [Test]
@@ -73,7 +88,7 @@ namespace SpaCenterTest
             var future = DateTime.Today.AddDays(1);
 
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Customer(_name, _surname, _email, _phone, future));
+                _person1.AssignToCustomer(future));
 
             Assert.That(ex!.Message, Is.EqualTo("Birth date can't be in the future"));
         }
@@ -84,13 +99,7 @@ namespace SpaCenterTest
             var futureBirthDate = DateTime.Today.AddDays(1);
 
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Customer(
-                    name: "Anna",
-                    surname: "Smith",
-                    email: "anna@example.com",
-                    phoneNumber: "123456789",
-                    dateOfBirth: futureBirthDate
-                ));
+                _person1.AssignToCustomer(futureBirthDate));
 
             Assert.That(ex!.Message, Is.EqualTo("Birth date can't be in the future"));
         }
@@ -98,24 +107,20 @@ namespace SpaCenterTest
         [Test]
         public void Extent_Should_Be_ReadOnly()
         {
-            var c = new Customer("John", "Smith", "john@test.com", "+48123456789", new DateTime(1990, 1, 1));
-
             var extent = Customer.Customers;
 
             Assert.That(extent, Is.AssignableTo<IReadOnlyList<Customer>>());
 
             Assert.Throws<NotSupportedException>(() =>
             {
-                ((IList<Customer>)extent).Add(c);
+                ((IList<Customer>)extent).Add(_cust);
             });
         }
 
         [Test]
         public void Modifying_Property_Should_Update_Object_Inside_Extent()
         {
-            var c = new Customer(_name, _surname, _email, _phone, _dob);
-
-            c.DateOfBirth = new DateTime(1985, 5, 5);
+            _cust.DateOfBirth = new DateTime(1985, 5, 5);
 
             var first = Customer.Customers[0];
             Assert.That(first.DateOfBirth, Is.EqualTo(new DateTime(1985, 5, 5)));
@@ -125,63 +130,50 @@ namespace SpaCenterTest
         public void BookService_ShouldCreateBookingAndReverseConnections()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer = new Customer(_name, _surname, _email, _phone, _dob);
 
             var services = new List<Service> { service };
 
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
-
-            var booking = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
+            var booking = _cust.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, _emp);
 
             Assert.That(
-                customer.ListOfBookings,
+                _cust.ListOfBookings,
                 Has.One.Matches<Booking>(b =>
                     b.PaymentMethod == booking.PaymentMethod &&
                     b.Date == booking.Date &&
                     b.Service!.Name == booking.Service!.Name &&
                     b.Employee!.Pesel == booking.Employee!.Pesel &&
-                    b.Customer!.Name == booking.Customer!.Name &&
-                    b.Customer!.Surname == booking.Customer!.Surname
+                    b.Customer!.Prsn.Name == booking.Customer!.Prsn.Name &&
+                    b.Customer!.Prsn.Surname == booking.Customer!.Prsn.Surname
                 ));
 
             Assert.That(service.ListOfBookings, Has.One.Matches<Booking>(b => b == booking));
 
-            Assert.That(booking.Customer, Is.EqualTo(customer));
+            Assert.That(booking.Customer, Is.EqualTo(_cust));
             Assert.That(booking.Service, Is.EqualTo(service));
-            Assert.That(booking.Employee, Is.EqualTo(employee));
+            Assert.That(booking.Employee, Is.EqualTo(_emp));
         }
 
         [Test]
         public void BookService_ShouldAllowMultipleBookingForSameService()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer1 = new Customer(_name, _surname, _email, _phone, _dob);
-            var customer2 = new Customer("John", "Smith", "john@test.com", "+48123456789", new DateTime(1990, 1, 1));
-
+            
+            var person3 = new SpaPerson("John", "Smith", "john@test.com", "+48123456789");
+            person3.AssignToCustomer(new DateTime(1990, 1, 1));
+            var customer2 = (Customer)person3.Cstmr;
             var services = new List<Service> { service };
+            
+    
+            var booking1 = _cust.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, _emp);
+            var booking2 = _cust.BookService(PaymentMethod.AtTheSPA, new DateTime(2026, 12, 18), service, _emp);
+            var booking3 = customer2.BookService(PaymentMethod.AtTheSPA, new DateTime(2027, 12, 20), service, _emp);
 
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
-
-            var booking1 = customer1.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
-            var booking2 = customer1.BookService(PaymentMethod.AtTheSPA, new DateTime(2025, 12, 18), service, employee);
-            var booking3 = customer2.BookService(PaymentMethod.AtTheSPA, new DateTime(2025, 12, 20), service, employee);
-
-            Assert.That(customer1.ListOfBookings.Count(), Is.EqualTo(2));
+            Assert.That(_cust.ListOfBookings.Count(), Is.EqualTo(2));
             Assert.That(customer2.ListOfBookings.Count(), Is.EqualTo(1));
             Assert.That(service.ListOfBookings.Count(), Is.EqualTo(3));
 
-            Assert.That(customer1.ListOfBookings, Has.Exactly(1).EqualTo(booking1));
-            Assert.That(customer1.ListOfBookings, Has.Exactly(1).EqualTo(booking2));
+            Assert.That(_cust.ListOfBookings, Has.Exactly(1).EqualTo(booking1));
+            Assert.That(_cust.ListOfBookings, Has.Exactly(1).EqualTo(booking2));
             Assert.That(customer2.ListOfBookings, Has.Exactly(1).EqualTo(booking3));
         }
 
@@ -189,23 +181,16 @@ namespace SpaCenterTest
         public void BookService_ShouldNotAllowMultipleBookingForSameServiceAndEmpAtTheSameTime()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer1 = new Customer(_name, _surname, _email, _phone, _dob);
-            var customer2 = new Customer("John", "Smith", "john@test.com", "+48123456789", new DateTime(1990, 1, 1));
+            var person3 = new SpaPerson("John", "Smith", "john@test.com", "+48123456789");
+            person3.AssignToCustomer(new DateTime(1990, 1, 1));
+            var customer2 = (Customer)person3.Cstmr;
 
             var services = new List<Service> { service };
-
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
-
-            var booking1 = customer1.BookService(
+            var booking1 = _cust.BookService(
                 PaymentMethod.AtTheSPA,
                 new DateTime(2025, 12, 18, 14, 30, 0),
                 service,
-                employee);
+                _emp);
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
             {
@@ -213,39 +198,32 @@ namespace SpaCenterTest
                     PaymentMethod.AtTheSPA,
                     new DateTime(2025, 12, 18, 14, 30, 0),
                     service,
-                    employee);
+                    _emp);
             });
 
             Assert.That(ex!.Message, Is.EqualTo("Employee already has appointment at this time"));
-            Assert.That(customer1.ListOfBookings.Count(), Is.EqualTo(1));
+            Assert.That(_cust.ListOfBookings.Count(), Is.EqualTo(1));
             Assert.That(customer2.ListOfBookings.Count(), Is.EqualTo(0));
-            Assert.That(customer1.ListOfBookings, Has.Exactly(1).EqualTo(booking1));
+            Assert.That(_cust.ListOfBookings, Has.Exactly(1).EqualTo(booking1));
         }
 
         [Test]
         public void RemoveBooking_ShouldRemoveAllReferences()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer = new Customer(_name, _surname, _email, _phone, _dob);
 
             var services = new List<Service> { service };
+            
 
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
-
-            var booking = customer.BookService(
+            var booking = _cust.BookService(
                 PaymentMethod.AtTheSPA,
                 new DateTime(2025, 12, 18, 14, 30, 0),
                 service,
-                employee);
+                _emp);
 
             booking.RemoveBooking();
 
-            Assert.That(customer.ListOfBookings, Is.Empty);
+            Assert.That(_cust.ListOfBookings, Is.Empty);
             Assert.That(service.ListOfBookings, Is.Empty);
 
             Assert.That(booking.Customer, Is.Null);
@@ -256,49 +234,34 @@ namespace SpaCenterTest
         public void RemoveBooking_ShouldNotAffectOtherBookingsInBag()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer = new Customer(_name, _surname, _email, _phone, _dob);
 
             var services = new List<Service> { service };
 
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
-
-            var booking1 = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
-            var booking2 = customer.BookService(PaymentMethod.AtTheSPA, new DateTime(2025, 12, 18), service, employee);
+            var booking1 = _cust.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, _emp);
+            var booking2 = _cust.BookService(PaymentMethod.AtTheSPA, new DateTime(2028, 12, 18), service, _emp);
 
             booking1.RemoveBooking();
 
-            Assert.That(customer.ListOfBookings.Count, Is.EqualTo(1));
+            Assert.That(_cust.ListOfBookings.Count, Is.EqualTo(1));
             Assert.That(service.ListOfBookings.Count, Is.EqualTo(1));
-            Assert.That(customer.ListOfBookings, Has.One.EqualTo(booking2));
+            Assert.That(_cust.ListOfBookings, Has.One.EqualTo(booking2));
         }
 
         [Test]
         public void ListOfBookings_ShouldReturnCopiesNotReferences()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer = new Customer(_name, _surname, _email, _phone, _dob);
 
             var services = new List<Service> { service };
+            
 
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
+            _ = _cust.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, _emp);
 
-            _ = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
-
-            var copy = customer.ListOfBookings as HashSet<Booking>;
+            var copy = _cust.ListOfBookings as HashSet<Booking>;
             var fieldValue = typeof(Customer)
                 .GetField("_listOfBookings",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
-                .GetValue(customer);
+                .GetValue(_cust);
 
             Assert.That(copy, Is.Not.SameAs(fieldValue));
         }
@@ -307,32 +270,23 @@ namespace SpaCenterTest
         public void ListOfBookings_ModifyingCopyShouldNotAffectOriginal()
         {
             var service = new Service("Sauna", "Steam sauna", TimeSpan.FromMinutes(20), 50m, 18);
-            var customer = new Customer(_name, _surname, _email, _phone, _dob);
 
             var services = new List<Service> { service };
 
-            var employee = new Employee(
-                "John", "Doe", "john@test.com", "+48123456789",
-                12345678901, DateTime.Today.AddYears(-1), 5, services,
-                roles: EmployeeRole.Therapist,
-                certifications: _therapistCertifications
-            );
+            _ = _cust.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, _emp);
 
-            _ = customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, service, employee);
-
-            var copy = customer.ListOfBookings.ToList();
+            var copy = _cust.ListOfBookings.ToList();
             copy.Clear();
 
-            Assert.That(customer.ListOfBookings.Count(), Is.EqualTo(1));
+            Assert.That(_cust.ListOfBookings.Count(), Is.EqualTo(1));
         }
 
         [Test]
         public void BookService_NullService_ShouldThrow()
         {
-            var customer = new Customer(_name, _surname, _email, _phone, _dob);
 
             Assert.Throws<ArgumentNullException>(() =>
-                customer.BookService(PaymentMethod.AtTheSPA, DateTime.Today, null!, null!));
+                _cust.BookService(PaymentMethod.AtTheSPA, DateTime.Today, null!, null!));
         }
     }
 }
