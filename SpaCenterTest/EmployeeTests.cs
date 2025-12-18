@@ -1056,5 +1056,115 @@ namespace SpaCenterTest
 
             Assert.That(ex!.Message, Is.EqualTo("Certification can't be empty"));
         }
+        
+        //Overlapping Person inheritance
+        
+        [Test]
+        public void AssignToCustomer_ShouldCreateCustomer()
+        {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToCustomer(new DateTime(1990, 1, 1));
+            Assert.That(person.Cstmr, Is.Not.Null);
+            Assert.That(person.Cstmr.Prsn, Is.SameAs(person));
+            Assert.That(person.Cstmr.Age, Is.GreaterThan(0));
+        }
+        
+        [Test]
+        public void AssignToEmployee_ShouldCreateEmployee()
+        {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            
+            Assert.That(person.Empl, Is.Not.Null);
+            Assert.That(person.Empl.Prsn, Is.SameAs(person));
+            Assert.That(person.Empl.ProvidesServices, Has.Exactly(1).Items);
+        }
+        
+        [Test]
+        public void Person_CanBeCustomerAndEmployee_AtTheSameTime()
+        {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            person.AssignToCustomer(new DateTime(1990, 1, 1));
+            
+            Assert.That(person.Cstmr, Is.Not.Null);
+            Assert.That(person.Empl, Is.Not.Null);
+
+            Assert.That(person.Cstmr.Prsn, Is.SameAs(person));
+            Assert.That(person.Empl.Prsn, Is.SameAs(person));
+        }
+        
+        [Test]
+        public void CustomerAndEmployee_ShouldReferenceSamePersonInstance()
+        {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            person.AssignToEmployee(
+                pesel: _pesel,
+                hireDate: _hireDate,
+                yearsOfExperience: _years,
+                services: _services,
+                roles: EmployeeRole.Receptionist,
+                languages: _receptionistLanguages);
+            person.AssignToCustomer(new DateTime(1990, 1, 1));
+
+            // Assert
+            Assert.That(
+                ReferenceEquals(person.Cstmr.Prsn, person.Empl.Prsn),
+                Is.True
+            );
+        }
+        
+        [Test]
+        public void AssignToEmployee_WithNoServices_ShouldThrow()
+        {
+            var person = new SpaPerson(
+                name: _name,
+                surname: _surname,
+                email: _email,
+                phone: _phone
+            );
+            Assert.Throws<ArgumentException>(() =>
+                person.AssignToEmployee(
+                    pesel: 12345678901,
+                    hireDate: DateTime.Today,
+                    yearsOfExperience: 2,
+                    services: Array.Empty<Service>(),
+                    roles: EmployeeRole.Receptionist,
+                    languages: new[] { "English" }
+                )
+            );
+        }
     }
 }
