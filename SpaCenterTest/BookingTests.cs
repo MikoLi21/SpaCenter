@@ -13,6 +13,8 @@ namespace SpaCenterTest
         private Employee _emp = null!;
         private Service _svc = null!;
         private List<Service> _services = null!;
+        private SpaPerson _person1;
+        private SpaPerson _person2;
 
         private readonly List<string> _therapistCertifications = new() { "Massage certificate" };
 
@@ -26,15 +28,26 @@ namespace SpaCenterTest
 
             _svc = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
             _services = new List<Service> { _svc };
+            
+            _person1 = new SpaPerson("Anna", "Nowak", "anna@example.com", "111222333");
+            _person2 = new SpaPerson("Eva", "Kowalska", "eva@example.com", "999888777");
+            
+            _person1.AssignToCustomer(new DateTime(2000, 1, 1));
+            _person2.AssignToEmployee(12345678901, DateTime.Today.AddYears(-5), 4, _services,
+                roles: EmployeeRole.Therapist,
+                certifications: _therapistCertifications);
 
-            _cust = new Customer("Anna", "Nowak", "anna@example.com", "111222333", new DateTime(2000, 1, 1));
+            _cust = (Customer)_person1.Cstmr;
+            _emp = (Employee)_person2.Empl;
 
-            _emp = new Employee(
+            //_cust = new Customer("Anna", "Nowak", "anna@example.com", "111222333", new DateTime(2000, 1, 1));
+
+            /*_emp = new Employee(
                 "Eva", "Kowalska", "eva@example.com", "999888777",
                 12345678901, DateTime.Today.AddYears(-5), 4, _services,
                 roles: EmployeeRole.Therapist,
                 certifications: _therapistCertifications
-            );
+            );*/
         }
 
         // --------------------------------------------------------------
@@ -173,13 +186,13 @@ namespace SpaCenterTest
         public void SetEmployee_ChangesEmployee_AndUpdatesReverseConnection()
         {
             var date = DateTime.Today.AddDays(2);
-
-            var emp2 = new Employee(
-                "John", "Black", "john@example.com", "777666555",
-                98765432101, DateTime.Today.AddYears(-3), 3, _services,
+            
+            var person3 = new SpaPerson("John", "Black", "john@example.com", "777666555");
+            person3.AssignToEmployee(98765432101, DateTime.Today.AddYears(-3), 3, _services,
                 roles: EmployeeRole.Therapist,
-                certifications: new List<string> { "Massage certificate" }
-            );
+                certifications: new List<string> { "Massage certificate" });
+            
+            var emp2 = (Employee)person3.Empl;
 
             var booking = new Booking(_cust, _svc, _emp, date, PaymentMethod.AtTheSPA);
 
@@ -220,13 +233,13 @@ namespace SpaCenterTest
         public void SetEmployee_Throws_WhenNewEmployeeAlreadyHasBookingOnSameDate()
         {
             var date = DateTime.Today.AddDays(5);
-
-            var emp2 = new Employee(
-                "John", "Black", "john@example.com", "777666555",
-                98765432101, DateTime.Today.AddYears(-3), 3, _services,
+            
+            var person3 = new SpaPerson("John", "Black", "john@example.com", "777666555");
+            person3.AssignToEmployee(98765432101, DateTime.Today.AddYears(-3), 3, _services,
                 roles: EmployeeRole.Therapist,
-                certifications: new List<string> { "Massage certificate" }
-            );
+                certifications: new List<string> { "Massage certificate" });
+            
+            var emp2 = (Employee)person3.Empl;
 
             _ = new Booking(_cust, _svc, emp2, date, PaymentMethod.AtTheSPA);
 

@@ -9,7 +9,12 @@ namespace SpaCenterTest
     public class BranchTests
     {
         private Address _address = null!;
-
+        private Employee _emp1 = null!;
+        private Employee _emp2 = null!;
+        private SpaPerson _person1;
+        private SpaPerson _person2;
+        private Service _svc = null!;
+        private List<Service> _services = null!;
         [SetUp]
         public void SetUp()
         {
@@ -17,6 +22,20 @@ namespace SpaCenterTest
 
             Branch.LoadExtent(null);
             Room.LoadExtent(null);
+            
+            _svc = new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16);
+            _services = new List<Service> { _svc };
+            
+            _person1 = new SpaPerson("Eva", "Kowalska", "eva@example.com", "999888777");
+            _person2 = new SpaPerson("E2", "B", "e2@example.com", "222222222");
+            _person1.AssignToEmployee(12345678901, DateTime.Today.AddYears(-1), 4m, _services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" });
+            _person2.AssignToEmployee(22222222222, DateTime.Today.AddYears(-3), 5m, _services,
+                roles: EmployeeRole.Receptionist,
+                languages: new List<string> { "English" });
+            _emp1 = (Employee)_person1.Empl;
+            _emp2 = (Employee)_person2.Empl;
         }
 
         // --------------------------------------------------------------
@@ -156,53 +175,29 @@ namespace SpaCenterTest
         public void AddEmployee_CreatesQualifiedAssociation_AndReverseConnection()
         {
             var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            
+            
+            branch.AddEmployee(_emp1);
 
-            var services = new List<Service>
-            {
-                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
-            };
-
-            var employee = new Employee(
-                "Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" }
-            );
-            branch.AddEmployee(employee);
-
-            Assert.That(branch.EmployeesByPesel.ContainsKey(employee.Pesel), Is.True);
-            Assert.That(branch.EmployeesByPesel[employee.Pesel], Is.EqualTo(employee));
-            Assert.That(employee.Branches, Contains.Item(branch));
+            Assert.That(branch.EmployeesByPesel.ContainsKey(_emp1.Pesel), Is.True);
+            Assert.That(branch.EmployeesByPesel[_emp1.Pesel], Is.EqualTo(_emp1));
+            Assert.That(_emp1.Branches, Contains.Item(branch));
         }
 
         [Test]
         public void RemoveEmployee_RemovesFromBothSides_WhenMoreThanOneEmployee()
         {
             var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
+            
+            branch.AddEmployee(_emp1);
+            branch.AddEmployee(_emp2);
 
-            var services = new List<Service>
-            {
-                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
-            };
+            branch.RemoveEmployee(_emp1.Pesel);
 
-            var emp1 = new Employee("E1", "A", "e1@example.com", "111111111",
-                11111111111, DateTime.Today.AddYears(-2), 3m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" });
-
-            var emp2 = new Employee("E2", "B", "e2@example.com", "222222222",
-                22222222222, DateTime.Today.AddYears(-3), 5m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" });
-            branch.AddEmployee(emp1);
-            branch.AddEmployee(emp2);
-
-            branch.RemoveEmployee(emp1.Pesel);
-
-            Assert.That(branch.EmployeesByPesel.ContainsKey(emp1.Pesel), Is.False);
-            Assert.That(emp1.Branches, Does.Not.Contain(branch));
-            Assert.That(branch.EmployeesByPesel.ContainsKey(emp2.Pesel), Is.True);
-            Assert.That(emp2.Branches, Contains.Item(branch));
+            Assert.That(branch.EmployeesByPesel.ContainsKey(_emp1.Pesel), Is.False);
+            Assert.That(_emp1.Branches, Does.Not.Contain(branch));
+            Assert.That(branch.EmployeesByPesel.ContainsKey(_emp2.Pesel), Is.True);
+            Assert.That(_emp2.Branches, Contains.Item(branch));
         }
 
         [Test]
@@ -210,21 +205,10 @@ namespace SpaCenterTest
         {
             var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
 
-            var services = new List<Service>
-            {
-                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
-            };
-
-            var emp = new Employee(
-                "Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" }
-            );
-            branch.AddEmployee(emp);
+            branch.AddEmployee(_emp1);
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
-                branch.RemoveEmployee(emp.Pesel));
+                branch.RemoveEmployee(_emp1.Pesel));
 
             Assert.That(ex!.Message, Is.EqualTo("Branch must have at least one employee"));
         }
@@ -233,28 +217,19 @@ namespace SpaCenterTest
         public void UpdateEmployeePesel_ChangesDictionaryKey_AndKeepsReverse()
         {
             var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
-
-            var services = new List<Service>
-            {
-                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
-            };
+            
 
             long oldPesel = 12345678901;
             long newPesel = 98765432109;
 
-            var emp = new Employee(
-                "Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" }
-            );
-            branch.AddEmployee(emp);
+
+            branch.AddEmployee(_emp1);
 
             branch.UpdateEmployeePesel(oldPesel, newPesel);
 
             Assert.That(branch.GetEmployeeByPesel(oldPesel), Is.Null);
-            Assert.That(branch.GetEmployeeByPesel(newPesel), Is.EqualTo(emp));
-            Assert.That(emp.Pesel, Is.EqualTo(newPesel));
+            Assert.That(branch.GetEmployeeByPesel(newPesel), Is.EqualTo(_emp1));
+            Assert.That(_emp1.Pesel, Is.EqualTo(newPesel));
         }
 
         [Test]
@@ -262,23 +237,16 @@ namespace SpaCenterTest
         {
             var branch = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
 
-            var services = new List<Service>
-            {
-                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
-            };
-
             long pesel = 12345678901;
-
-            var emp1 = new Employee("E1", "A", "e1@example.com", "111111111",
-                11111111111, DateTime.Today.AddYears(-2), 3m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" });
-
-            var emp2 = new Employee("E2", "B", "e2@example.com", "222222222",
-                22222222222, DateTime.Today.AddYears(-3), 5m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" });
-            branch.AddEmployee(emp1);
+            
+            branch.AddEmployee(_emp1);
+            
+            var person3 = new SpaPerson("John", "Black", "john7876@gmail.com", "+48777111777");
+            person3.AssignToEmployee(12345678901, new DateTime(2024, 05, 06), 5.5m, _services,
+                roles: EmployeeRole.SaunaSupervisor,
+                firstAidCertification: "First Aid Level 1",
+                leaveDate: new DateTime(2025, 01, 01));
+            var emp2 = (Employee)person3.Empl;
 
             var ex = Assert.Throws<ArgumentException>(() =>
                 branch.AddEmployee(emp2));
@@ -291,22 +259,11 @@ namespace SpaCenterTest
         {
             var branch1 = new Branch("SPA Warsaw", _address, new List<string> { "+48123456789" });
             var branch2 = new Branch("SPA Krakow", _address, new List<string> { "+48123456780" });
-
-            var services = new List<Service>
-            {
-                new Service("Massage", "Relaxing massage", TimeSpan.FromMinutes(60), 200m, 16)
-            };
-
-            var emp = new Employee(
-                "Eva", "Kowalska", "eva@example.com", "999888777",
-                12345678901, DateTime.Today.AddYears(-1), 4m, services,
-                roles: EmployeeRole.Receptionist,
-                languages: new List<string> { "English" }
-            );
-            branch1.AddEmployee(emp);
+            
+            branch1.AddEmployee(_emp1);
 
             var ex = Assert.Throws<InvalidOperationException>(() =>
-                branch2.AddEmployee(emp));
+                branch2.AddEmployee(_emp1));
 
             Assert.That(ex!.Message, Is.EqualTo("Employee already assigned to a different branch"));
         }

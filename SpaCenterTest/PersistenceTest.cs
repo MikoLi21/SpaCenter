@@ -21,21 +21,22 @@ public class PersistenceTest
         var s1 = new Service("Thai Massage", "Message in thai style", new TimeSpan(1, 0, 0), 300, 10);
         var services =  new List<Service>();
         services.Add(s1);
-        var c1 = new Customer("Anna", "Brown", "annabrown@gmail.com", "+48111222333", new DateTime(1999, 01, 01));
-        var e1 = new Employee(
-            "Bob", "Smith", "bobsmith666@gmail.com", "+48000555999",
-            45678901177, DateTime.Today, 3, services,
+        
+        var person1 = new SpaPerson("Anna", "Brown", "annabrown@gmail.com", "+48111222333");
+        var person2 = new SpaPerson("Bob", "Smith", "bobsmith666@gmail.com", "+48000555999");
+        var person3 = new SpaPerson("John", "Black", "john7876@gmail.com", "+48777111777");
+        person1.AssignToCustomer(new DateTime(1999, 01, 01));
+        person2.AssignToEmployee(45678901177, DateTime.Today, 3, services,
             roles: EmployeeRole.Receptionist,
-            languages: new List<string> { "English" }
-        );
-
-        var e2 = new Employee(
-            "John", "Black", "john7876@gmail.com", "+48777111777",
-            78903156789, new DateTime(2024, 05, 06), 5.5m, services,
+            languages: new List<string> { "English" });
+        person3.AssignToEmployee(78903156789, new DateTime(2024, 05, 06), 5.5m, services,
             roles: EmployeeRole.SaunaSupervisor,
             firstAidCertification: "First Aid Level 1",
-            leaveDate: new DateTime(2025, 01, 01)
-        );
+            leaveDate: new DateTime(2025, 01, 01));
+
+        var c1 = (Customer)person1.Cstmr;
+        var e1 = (Employee)person2.Empl;
+        var e2 = (Employee)person3.Empl;
         var bk1 = new Booking(c1, s1,e1, new DateTime(2025, 11, 25, 14, 30, 0), PaymentMethod.AtTheSPA);
         
         List<string> phones = new List<string>
@@ -72,11 +73,11 @@ public class PersistenceTest
         Assert.That(Room.Rooms, Has.Count.EqualTo(1));
 
         // Verify example fields
-        Assert.That(Customer.Customers[0].Name, Is.EqualTo("Anna"));
-        Assert.That(Employee.Employees[0].Name, Is.EqualTo("Bob"));
-        Assert.That(Employee.Employees[1].Name, Is.EqualTo("John"));
+        Assert.That(Customer.Customers[0].Prsn.Name, Is.EqualTo("Anna"));
+        Assert.That(Employee.Employees[0].Prsn.Name, Is.EqualTo("Bob"));
+        Assert.That(Employee.Employees[1].Prsn.Name, Is.EqualTo("John"));
         Assert.That(Service.Services[0].Name, Is.EqualTo("Thai Massage"));
-        Assert.That(Booking.Bookings[0].Customer.Name, Is.EqualTo("Anna"));
+        Assert.That(Booking.Bookings[0].Customer.Prsn.Name, Is.EqualTo("Anna"));
         Assert.That(Branch.Branches[0].Name, Is.EqualTo("SPA Wola"));
         Assert.That(Room.Rooms[0].RoomNumber, Is.EqualTo(101));
 

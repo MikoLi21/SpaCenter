@@ -8,11 +8,19 @@ namespace SpaCenterTest
     public class PersonValidationTests
     {
         private DateTime _validBirthDate;
+        private SpaPerson _person;
 
         [SetUp]
         public void Setup()
         {
             _validBirthDate = DateTime.Today.AddYears(-20);
+            
+            _person = new SpaPerson(
+                name: "Anna",
+                surname: "Smith",
+                email: "test@example.com",
+                phone: "123456789"
+            );
         }
 
        
@@ -20,13 +28,12 @@ namespace SpaCenterTest
         public void NameIsEmpty()
         {
             var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Customer(
-                    name: "",
-                    surname: "Smith",
-                    email: "test@example.com",
-                    phoneNumber: "123456789",
-                    dateOfBirth: _validBirthDate
-                ));
+                new SpaPerson(
+                name: "",
+                surname: "Smith",
+                email: "test@example.com",
+                phone: "123456789"
+            ));
 
             Assert.That(ex.ParamName, Is.EqualTo("Name can't be empty"));
         }
@@ -36,12 +43,11 @@ namespace SpaCenterTest
         public void SurnameIsEmpty()
         {
             var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Customer(
-                    name: "Anna",
+                new SpaPerson(
+                    name: "jyjyht",
                     surname: "",
                     email: "test@example.com",
-                    phoneNumber: "123456789",
-                    dateOfBirth: _validBirthDate
+                    phone: "123456789"
                 ));
 
             Assert.That(ex.ParamName, Is.EqualTo("Surname can't be empty"));
@@ -52,12 +58,11 @@ namespace SpaCenterTest
         public void EmailIsEmpty()
         {
             var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Customer(
-                    name: "Anna",
+                new SpaPerson(
+                    name: "trjjyk",
                     surname: "Smith",
                     email: "",
-                    phoneNumber: "123456789",
-                    dateOfBirth: _validBirthDate
+                    phone: "123456789"
                 ));
 
             Assert.That(ex.ParamName, Is.EqualTo("Email can't be empty"));
@@ -67,12 +72,11 @@ namespace SpaCenterTest
         public void EmailInvalidFormat()
         {
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Customer(
-                    name: "Anna",
+                new SpaPerson(
+                    name: "fkyulu",
                     surname: "Smith",
-                    email: "invalid-email-format",
-                    phoneNumber: "123456789",
-                    dateOfBirth: _validBirthDate
+                    email: "ghdjs-shgf-dhsg",
+                    phone: "123456789"
                 ));
 
             Assert.That(ex.Message, Is.EqualTo("Invalid email address"));
@@ -83,12 +87,11 @@ namespace SpaCenterTest
         public void PhoneNumberIsEmpty()
         {
             var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Customer(
-                    name: "Anna",
+                new SpaPerson(
+                    name: "jrjktkyt",
                     surname: "Smith",
                     email: "test@example.com",
-                    phoneNumber: "",
-                    dateOfBirth: _validBirthDate
+                    phone: ""
                 ));
 
             Assert.That(ex.ParamName, Is.EqualTo("Phone number can't be empty"));
@@ -98,13 +101,11 @@ namespace SpaCenterTest
         public void PhoneNumberInvalidFormat()
         {
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Customer(
-                    name: "Anna",
-                    surname: "Smith",
-                    email: "test@example.com",
-                    phoneNumber: "123-INVALID",
-                    dateOfBirth: _validBirthDate
-                ));
+                new SpaPerson(
+                name: "stjdtykykt",
+                surname: "Smith",
+                email: "test@example.com",
+                phone: "invalid"));
 
             Assert.That(ex.Message, Is.EqualTo("Invalid phone number"));
         }
