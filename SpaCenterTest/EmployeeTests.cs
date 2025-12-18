@@ -29,8 +29,11 @@ namespace SpaCenterTest
         [SetUp]
         public void Setup()
         {
-            // IMPORTANT: clear extent before every test (static list)
+            // IMPORTANT: clear extents before every test (static list)
             Employee.LoadExtent(new List<Employee>());
+            Junior.LoadExtent(new List<Junior>());
+            Mid.LoadExtent(new List<Mid>());
+            Senior.LoadExtent(new List<Senior>());
 
             _name = "Eva";
             _surname = "Kowalska";
@@ -1056,6 +1059,337 @@ namespace SpaCenterTest
 
             Assert.That(ex!.Message, Is.EqualTo("Certification can't be empty"));
         }
+
+       // ===================== Disjoint + Dynamic inheritance (Employee -> Junior/Mid/Senior) =====================
+       
+       [Test]
+       public void AssignToJunior_ShouldSetOnlyJunior_Disjoint()
+       {
+           var supervisorPerson = new SpaPerson(
+               name: "Sup",
+               surname: _surname,
+               email: "sup@example.com",
+               phone: _phone
+           );
+           supervisorPerson.AssignToEmployee(
+               pesel: 11111111111,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var supervisorEmp = (Employee)supervisorPerson.Empl;
+           supervisorEmp.AssignToMid();
+           var supervisorMid = supervisorEmp.Md!;
+       
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: _email,
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: _pesel,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToJunior(learningPeriod: 6, mids: new[] { supervisorMid });
+       
+           Assert.That(emp.Jnr, Is.Not.Null);
+           Assert.That(emp.Md, Is.Null);
+           Assert.That(emp.Snr, Is.Null);
+       
+           Assert.That(emp.Jnr!.Emp, Is.EqualTo(emp));
+           Assert.That(Junior.Juniors, Does.Contain(emp.Jnr));
+       }
+       
+       [Test]
+       public void AssignToMid_ShouldSetOnlyMid_Disjoint()
+       {
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: _email,
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: _pesel,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToMid();
+       
+           Assert.That(emp.Jnr, Is.Null);
+           Assert.That(emp.Md, Is.Not.Null);
+           Assert.That(emp.Snr, Is.Null);
+       
+           Assert.That(emp.Md!.Emp, Is.EqualTo(emp));
+       }
+       
+       [Test]
+       public void AssignToSenior_ShouldSetOnlySenior_Disjoint()
+       {
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: _email,
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: _pesel,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToSenior(1.25m);
+       
+           Assert.That(emp.Jnr, Is.Null);
+           Assert.That(emp.Md, Is.Null);
+           Assert.That(emp.Snr, Is.Not.Null);
+       
+           Assert.That(emp.Snr!.Emp, Is.EqualTo(emp));
+       }
+       
+       [Test]
+       public void AssigningLevelTwice_ShouldThrow_DisjointConstraint()
+       {
+           var supervisorPerson = new SpaPerson(
+               name: "Sup",
+               surname: _surname,
+               email: "sup2@example.com",
+               phone: _phone
+           );
+           supervisorPerson.AssignToEmployee(
+               pesel: 22222222222,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var supervisorEmp = (Employee)supervisorPerson.Empl;
+           supervisorEmp.AssignToMid();
+           var supervisorMid = supervisorEmp.Md!;
+       
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: _email,
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: _pesel,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToJunior(learningPeriod: 3, mids: new[] { supervisorMid });
+       
+           var ex = Assert.Throws<InvalidOperationException>(() => emp.AssignToMid());
+           Assert.That(ex!.Message, Is.EqualTo("Employee already has a level assigned."));
+       }
+       
+       [Test]
+       public void Junior_SwitchToMid_ShouldReplaceState_UpdateExtents_AndCleanupSupervisionLinks()
+       {
+           var supervisorPerson = new SpaPerson(
+               name: "Sup",
+               surname: _surname,
+               email: "sup3@example.com",
+               phone: _phone
+           );
+           supervisorPerson.AssignToEmployee(
+               pesel: 33333333333,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var supervisorEmp = (Employee)supervisorPerson.Empl;
+           supervisorEmp.AssignToMid();
+           var supervisorMid = supervisorEmp.Md!;
+       
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: "junior.switch@example.com",
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: 44444444444,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToJunior(learningPeriod: 4, mids: new[] { supervisorMid });
+           var junior = emp.Jnr!;
+       
+           Assert.That(junior.SupervisedBy, Does.Contain(supervisorMid));
+           Assert.That(supervisorMid.SupervisedJuniors, Does.Contain(junior));
+           Assert.That(Junior.Juniors, Does.Contain(junior));
+       
+           junior.SwitchToMid();
+       
+           Assert.That(emp.Jnr, Is.Null);
+           Assert.That(emp.Md, Is.Not.Null);
+           Assert.That(emp.Snr, Is.Null);
+       
+           Assert.That(Junior.Juniors, Does.Not.Contain(junior));
+       
+           Assert.That(supervisorMid.SupervisedJuniors, Does.Not.Contain(junior));
+       }
+       
+       [Test]
+       public void Mid_SwitchToSenior_ShouldReplaceState_UpdateExtents_AndCleanupSupervisedJuniorsLinks()
+       {
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: "mid.switch@example.com",
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: 55555555555,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToMid();
+           var mid = emp.Md!;
+           Assert.That(Mid.Mids, Does.Contain(mid));
+       
+           var juniorPerson = new SpaPerson(
+               name: "Junior",
+               surname: _surname,
+               email: "junior.for.mid@example.com",
+               phone: _phone
+           );
+           juniorPerson.AssignToEmployee(
+               pesel: 66666666666,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var juniorEmp = (Employee)juniorPerson.Empl;
+       
+           juniorEmp.AssignToJunior(learningPeriod: 2, mids: new[] { mid });
+           var junior = juniorEmp.Jnr!;
+       
+           Assert.That(mid.SupervisedJuniors, Does.Contain(junior));
+           Assert.That(junior.SupervisedBy, Does.Contain(mid));
+       
+           mid.SwitchToSenior(bonusCoefficient: 1.50m);
+       
+           Assert.That(emp.Jnr, Is.Null);
+           Assert.That(emp.Md, Is.Null);
+           Assert.That(emp.Snr, Is.Not.Null);
+       
+           Assert.That(Mid.Mids, Does.Not.Contain(mid));
+       
+           Assert.That(junior.SupervisedBy, Does.Not.Contain(mid));
+       }
+       
+       [Test]
+       public void OldJuniorObject_AfterPromotion_ShouldNotBeUsable_ForSecondSwitch()
+       {
+           var supervisorPerson = new SpaPerson(
+               name: "Sup",
+               surname: _surname,
+               email: "sup4@example.com",
+               phone: _phone
+           );
+           supervisorPerson.AssignToEmployee(
+               pesel: 77777777777,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var supervisorEmp = (Employee)supervisorPerson.Empl;
+           supervisorEmp.AssignToMid();
+           var supervisorMid = supervisorEmp.Md!;
+       
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: "stale.junior@example.com",
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: 88888888888,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToJunior(learningPeriod: 5, mids: new[] { supervisorMid });
+           var oldJunior = emp.Jnr!;
+       
+           oldJunior.SwitchToMid();
+       
+           Assert.Throws<NullReferenceException>(() => oldJunior.SwitchToMid());
+       }
+       
+       [Test]
+       public void OldMidObject_AfterPromotion_ShouldNotBeUsable_ForSecondSwitch()
+       {
+           var person = new SpaPerson(
+               name: _name,
+               surname: _surname,
+               email: "stale.mid@example.com",
+               phone: _phone
+           );
+           person.AssignToEmployee(
+               pesel: 99999999999,
+               hireDate: _hireDate,
+               yearsOfExperience: _years,
+               services: _services,
+               roles: EmployeeRole.Receptionist,
+               languages: _receptionistLanguages
+           );
+           var emp = (Employee)person.Empl;
+       
+           emp.AssignToMid();
+           var oldMid = emp.Md!;
+       
+           oldMid.SwitchToSenior(1.10m);
+       
+           Assert.Throws<NullReferenceException>(() => oldMid.SwitchToSenior(1.20m));
+       }
         
         //Overlapping Person inheritance
         
