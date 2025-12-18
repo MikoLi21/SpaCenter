@@ -21,9 +21,13 @@ public class Junior
             _learningPeriod = value;
         }
     }
+    
+    public Employee Emp { get; private set; }
 
-    public Junior(int learningPeriod, IEnumerable<Mid> mids)
+    internal Junior(Employee emp, int learningPeriod, IEnumerable<Mid> mids)
     {
+        Emp = emp ?? throw new ArgumentNullException(nameof(emp));
+        
         LearningPeriod = learningPeriod;
         
         if (mids == null || !mids.Any())
@@ -86,4 +90,31 @@ public class Junior
     {
         _supervisedBy.Remove(mid);
     }
+    
+    
+    // Dynamic overlapping Employee <-- Junior, Mid, Senior start
+    // switching is initiated from the child
+    public void SwitchToMid()
+    {
+        Emp.PromoteToMidFromJunior();
+    }
+
+    // used by Employee during promotion to avoid "must have at least one mid" rule
+    internal void DetachAllSupervisorsAndEmp()
+    {
+        foreach (var mid in _supervisedBy.ToList())
+        {
+            _supervisedBy.Remove(mid);
+            mid.RemoveJuniorFromMidReverse(this);
+        }
+
+        Emp = null!;
+    }
+    
+    internal static void DeleteJunior(Junior junior)
+    {
+        juniors_List.Remove(junior);
+    }
+    // Dynamic overlapping Employee <-- Junior, Mid, Senior end
+
 }

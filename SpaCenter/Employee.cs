@@ -254,6 +254,11 @@ public class Employee : IEmployee
     //     addEmployee(this);
     // }
     
+    
+    public Junior? Jnr { get; private set; }
+    public Mid? Md { get; private set; }
+    public Senior? Snr { get; private set; }
+    
     //Overlapping start (Person->Employee)
     public Person Prsn{ get; }
    
@@ -338,6 +343,67 @@ public class Employee : IEmployee
         addEmployee(this);
     }
 
+    // Dynamic overlapping Employee <-- Junior, Mid, Senior start
+    
+    public void AssignToJunior(int learningPeriod, IEnumerable<Mid> mids)
+    {
+        if (Jnr != null || Md != null || Snr != null)
+        {
+            throw new InvalidOperationException("Employee already has a level assigned.");
+        }
+        Jnr = new Junior(this, learningPeriod, mids);
+    }
+
+    public void AssignToMid()
+    {
+        if (Jnr != null || Md != null || Snr != null)
+        {
+            throw new InvalidOperationException("Employee already has a level assigned.");
+        }
+        Md = new Mid(this);
+    }
+
+    public void AssignToSenior(decimal bonusCoefficient)
+    {
+        if (Jnr != null || Md != null || Snr != null)
+        {
+            throw new InvalidOperationException("Employee already has a level assigned.");
+        }
+        Snr = new Senior(this, bonusCoefficient);
+    }
+    
+    // ===== promotions triggered from children =====
+
+    internal void PromoteToMidFromJunior()
+    {
+        if (Jnr == null) throw new ArgumentNullException(nameof(Jnr));
+        
+        // prevent dangling links and remove from class extent
+        Jnr.DetachAllSupervisorsAndEmp();
+        Junior.DeleteJunior(Jnr);
+
+        Jnr = null;
+        
+        Md = new Mid(this);
+    }
+
+    internal void PromoteToSeniorFromMid(decimal bonusCoefficient)
+    {
+        if (Md == null) throw new ArgumentNullException(nameof(Md));
+
+        // prevent dangling links and remove Md from class extent
+        Md.DetachAllSupervisedJuniorsAndEmp();
+        Mid.DeleteMid(Md);
+
+        Md = null;
+        
+        Snr = new Senior(this, bonusCoefficient);
+    }
+    
+    // Dynamic overlapping Employee <-- Junior, Mid, Senior end
+    
+
+    
     private static void addEmployee(Employee employee)
     {
         if (employee == null)

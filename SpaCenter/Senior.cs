@@ -19,8 +19,11 @@ public class Senior
         }
     }
 
-    public Senior(decimal bonusCoefficient)
+    public Employee Emp { get; }
+
+    internal Senior(Employee emp, decimal bonusCoefficient)
     {
+        Emp = emp ?? throw new ArgumentNullException(nameof(emp));
         BonusCoefficient = bonusCoefficient;
         AddSenior(this);
     }

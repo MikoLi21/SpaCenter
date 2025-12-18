@@ -6,9 +6,11 @@ public class Mid
     public static IReadOnlyList<Mid> Mids => mids_List.AsReadOnly();
     private HashSet<Junior> _supervisedJuniors = new HashSet<Junior>();
     public IEnumerable<Junior> SupervisedJuniors => _supervisedJuniors.ToHashSet();
-    
-    public Mid()
+    public Employee Emp { get; private set; }
+
+    internal Mid(Employee emp)
     {
+        Emp = emp ?? throw new ArgumentNullException(nameof(emp));
         AddMid(this);
     }
 
@@ -61,4 +63,29 @@ public class Mid
     {
         _supervisedJuniors.Remove(junior);
     }
+    
+    // Dynamic overlapping Employee <-- Junior, Mid, Senior start
+    // switching is initiated from the child
+    public void SwitchToSenior(decimal bonusCoefficient)
+    {
+        Emp.PromoteToSeniorFromMid(bonusCoefficient);
+    }
+
+    // used by Employee during promotion to prevent dangling links
+    internal void DetachAllSupervisedJuniorsAndEmp()
+    {
+        foreach (var junior in _supervisedJuniors.ToList())
+        {
+            _supervisedJuniors.Remove(junior);
+            junior.RemoveMidFromJuniorReverse(this); 
+        }
+
+        Emp = null!;
+    }
+    
+    internal static void DeleteMid(Mid mid)
+    {
+        mids_List.Remove(mid);
+    }
+    // Dynamic overlapping Employee <-- Junior, Mid, Senior end
 }
